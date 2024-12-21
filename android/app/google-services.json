@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1058002518463",
+    "project_id": "chellenge-habit-app",
+    "storage_bucket": "chellenge-habit-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058002518463:android:d47248c611fe865200e10a",
+        "android_client_info": {
+          "package_name": "com.example.chellenge_habit_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1058002518463-l5jann6m6aotqan99b241lk78sadkblv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chellenge_habit_app",
+            "certificate_hash": "91485ace9327f941588fa5a17db187fde5237e2c"
+          }
+        },
+        {
+          "client_id": "1058002518463-t7c5dpnat46l4vqoo2rtji7nag7pgm0u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRwwoPLqQOPblPufpiU0fnAdW5dxZ0gQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1058002518463-t7c5dpnat46l4vqoo2rtji7nag7pgm0u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1058002518463-gmpj5fdtc3ptqe2rsfpv1fpk01kfboq6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chellengeHabitApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
