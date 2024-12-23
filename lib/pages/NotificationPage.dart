@@ -14,6 +14,10 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color(0xFF6A5ACD), // Purple background color
       body: SafeArea(
@@ -22,7 +26,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
           children: [
             // Back Button
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenWidth * 0.04), // Responsive padding
               child: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -32,33 +36,44 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
             ),
 
             // Title
-            const Center(
-              child: Text(
-                "What time do you\nSet notification?",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+                child: const Text(
+                  "What time do you\nSet notification?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
+
+            SizedBox(height: screenHeight * 0.02), // Responsive spacing
 
             // Cloud Image
             Center(
               child: Image.asset(
                 'assets/images/Morning.png',
-                height: 200,
+                height: screenHeight * 0.25, // Responsive height
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.06), // Responsive spacing
 
             // Time Selector
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFF6A5ACD),
+                      width: 2,
+                    ),
+                  ),
                   color: Color(0xFF1C1C1E), // Dark background for time picker
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
@@ -68,8 +83,10 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(height: screenHeight * 0.06),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Hour Picker (12-hour format)
                         _buildRecyclableTimeSlider(1, 12, _selectedHour,
@@ -98,7 +115,8 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                           });
                         }),
 
-                        const SizedBox(width: 10),
+                        SizedBox(
+                            width: screenWidth * 0.1), // Responsive spacing
 
                         // AM/PM Toggle
                         Column(
@@ -143,15 +161,18 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                         ),
                       ],
                     ),
-                    const Spacer(),
+                    // const Spacer(),
+                    SizedBox(height: screenHeight * 0.05),
 
                     // Continue Button
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.05, // Responsive padding
+                        vertical: screenHeight * 0.02,
+                      ),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 50,
+                        height: screenHeight * 0.07, // Responsive height
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6A5ACD),

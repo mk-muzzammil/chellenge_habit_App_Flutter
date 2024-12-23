@@ -9,21 +9,21 @@ class HabitTrackerStarterScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top Illustration
               Column(
                 children: [
-                  SizedBox(height: 50),
                   Center(
                     child: Image.asset(
                       'assets/images/illustration.png', // Add your image path here
                       height: 300,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 60),
                   // Title Text
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +36,7 @@ class HabitTrackerStarterScreen extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                             ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
                       Text(
                         "The best time to start is now!",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -49,19 +49,20 @@ class HabitTrackerStarterScreen extends StatelessWidget {
                         "You’re taking the first step in changing your life.\nLet us guide you through it.",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                             ),
                       ),
                     ],
                   ),
                 ],
               ),
-
+              // const Spacer(),
+              const SizedBox(height: 30),
               // Bottom Button
               ElevatedButton(
                 onPressed: () {
                   // Navigate to the next page
-                  Navigator.pushNamed(context, '/home');
+                  Navigator.pushNamed(context, '/auth');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
@@ -76,9 +77,7 @@ class HabitTrackerStarterScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context)
-                            .floatingActionButtonTheme
-                            .backgroundColor,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                 ),
               ),

@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Navigate to the next screen after 4 seconds
     Timer(Duration(seconds: 4), () {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/start');
     });
   }
 

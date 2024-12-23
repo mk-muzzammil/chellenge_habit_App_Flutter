@@ -1,3 +1,6 @@
+import 'package:chellenge_habit_app/pages/AuthenticationPage.dart';
+import 'package:chellenge_habit_app/pages/LogInPage.dart';
+import 'package:chellenge_habit_app/pages/SignUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -28,7 +31,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/start': (context) => HabitTrackerStarterScreen(),
-        '/home': (context) => HomePage(title: "Home Page"),
+        '/auth': (context) => AuthenticationPage(),
+        '/signUp': (context) => SignUpScreen(),
+        '/login': (context) => LoginScreen(),
         '/notifications': (context) => NotificationTimePage(),
       },
     );

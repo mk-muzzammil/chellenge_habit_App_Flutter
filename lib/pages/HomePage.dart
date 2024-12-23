@@ -16,10 +16,10 @@ class HomePage extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             // Navigate to Notification Page
-            Navigator.pushNamed(context, '/notifications');
+            Navigator.pushNamed(context, '/auth');
           },
           child: Text(
-            'Go to Notifications',
+            'Go to Auth',
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
