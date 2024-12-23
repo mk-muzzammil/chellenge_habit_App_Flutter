@@ -1,23 +1,18 @@
-import 'package:chellenge_habit_app/firebase_options.dart';
-import 'package:chellenge_habit_app/pages/NotificationPage.dart';
-import 'package:chellenge_habit_app/pages/TodayTaskPage.dart';
-import 'package:chellenge_habit_app/pages/TrackerPage.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'theme/app_theme.dart'; // Import custom theme
+import 'pages/SplashScreen.dart';
+import 'pages/HomePage.dart';
+import 'pages/NotificationPage.dart';
+import 'pages/StarterPage.dart';
 
 void main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions
-        .currentPlatform, // Corrected usage of Firebase options
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TodayTaskPage(), // Wrap inside MaterialApp
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -26,58 +21,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      debugShowCheckedModeBanner: false,
+      title: 'Challenge Habit App',
+      theme: appTheme,
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => SplashScreen(),
+        '/start': (context) => HabitTrackerStarterScreen(),
+        '/home': (context) => HomePage(title: "Home Page"),
+        '/notifications': (context) => NotificationTimePage(),
+      },
     );
   }
 }

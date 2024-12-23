@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NotificationTimePage extends StatefulWidget {
+  const NotificationTimePage({super.key});
+
   @override
   _NotificationTimePageState createState() => _NotificationTimePageState();
 }
@@ -13,22 +15,24 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF6A5ACD), // Purple background color
+      backgroundColor: const Color(0xFF6A5ACD), // Purple background color
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Back Button
             Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
               ),
             ),
 
             // Title
-            Center(
+            const Center(
               child: Text(
                 "What time do you\nSet notification?",
                 textAlign: TextAlign.center,
@@ -49,12 +53,12 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Time Selector
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFF1C1C1E), // Dark background for time picker
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
@@ -76,7 +80,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                         }),
 
                         // Separator
-                        Text(
+                        const Text(
                           ":",
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -94,7 +98,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                           });
                         }),
 
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
 
                         // AM/PM Toggle
                         Column(
@@ -111,8 +115,9 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                                   fontFamily: 'Inter',
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      _isAm ? Color(0xFF6A5ACD) : Colors.white,
+                                  color: _isAm
+                                      ? const Color(0xFF6A5ACD)
+                                      : Colors.white,
                                 ),
                               ),
                             ),
@@ -128,8 +133,9 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                                   fontFamily: 'Inter',
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      !_isAm ? Color(0xFF6A5ACD) : Colors.white,
+                                  color: !_isAm
+                                      ? const Color(0xFF6A5ACD)
+                                      : Colors.white,
                                 ),
                               ),
                             ),
@@ -137,18 +143,18 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                         ),
                       ],
                     ),
-                    Spacer(),
+                    const Spacer(),
 
                     // Continue Button
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
                       child: SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF6A5ACD),
+                            backgroundColor: const Color(0xFF6A5ACD),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -157,7 +163,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                             print(
                                 "Selected Time: ${_selectedHour.toString().padLeft(2, '0')}:${_selectedMinute.toString().padLeft(2, '0')} ${_isAm ? 'AM' : 'PM'}");
                           },
-                          child: Text(
+                          child: const Text(
                             'Continue',
                             style: TextStyle(
                               fontFamily: 'Inter',
@@ -187,7 +193,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
       child: ListWheelScrollView.useDelegate(
         itemExtent: 40,
         perspective: 0.005,
-        physics: FixedExtentScrollPhysics(),
+        physics: const FixedExtentScrollPhysics(),
         onSelectedItemChanged: (index) {
           int value = min + (index % (max - min + 1));
           onChanged(value);
@@ -202,8 +208,9 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                   fontFamily: 'Inter',
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color:
-                      value == selectedValue ? Color(0xFF6A5ACD) : Colors.white,
+                  color: value == selectedValue
+                      ? const Color(0xFF6A5ACD)
+                      : Colors.white,
                 ),
               ),
             );
