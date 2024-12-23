@@ -1,4 +1,7 @@
 import 'package:chellenge_habit_app/firebase_options.dart';
+import 'package:chellenge_habit_app/pages/NotificationPage.dart';
+import 'package:chellenge_habit_app/pages/TodayTaskPage.dart';
+import 'package:chellenge_habit_app/pages/TrackerPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +12,12 @@ void main() async {
     options: DefaultFirebaseOptions
         .currentPlatform, // Corrected usage of Firebase options
   );
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: TodayTaskPage(), // Wrap inside MaterialApp
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
