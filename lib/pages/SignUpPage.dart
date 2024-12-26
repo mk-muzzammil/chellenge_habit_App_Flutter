@@ -1,5 +1,6 @@
 // signup_screen.dart
 import 'package:chellenge_habit_app/theme/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -15,6 +16,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  Future<void> _SignUpUser(String email, String password) async {
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      if (credential.user != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("User created successfully")));
+      }
+      Navigator.pushNamed(context, "/profile");
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign up failed: ${e.message}')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +159,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // Handle sign up logic
+                        String email = _emailController.text.trim().toString();
+                        String password =
+                            _passwordController.text.trim().toString();
+                        String confirmPassword =
+                            _confirmPasswordController.text.trim().toString();
+
+                        if (email.isEmpty ||
+                            password.isEmpty ||
+                            confirmPassword.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Please fill all fields")));
+                        }
+                        if (password != confirmPassword) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Password does not match")));
+                        } else {
+                          _SignUpUser(email, password);
+                        }
+
+                        // Handle sign up
+                        Navigator.pushNamed(context, '/profile');
                       }
                     },
                     child: Text(

@@ -5,6 +5,8 @@ class AppColors {
   static const Color primary = Color(0xFF6C5DD3); // Example: Purple
   static const Color primaryDark = Color(0xFF4A3CB2);
   static const Color primaryLight = Color(0xFFA394F4);
+  static const Color skyBlue = Color(0xFF5DD8D0);
+  static const Color lightPink = Color(0xFFECB0CD);
 
   // // Secondary Colors
   // static const Color secondary = Color(0xFFF4A261); // Example: Orange
