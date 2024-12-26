@@ -2,6 +2,9 @@ import 'package:chellenge_habit_app/pages/AuthenticationPage.dart';
 import 'package:chellenge_habit_app/pages/LogInPage.dart';
 import 'package:chellenge_habit_app/pages/ProfileSetup.dart';
 import 'package:chellenge_habit_app/pages/SignUpPage.dart';
+import 'package:chellenge_habit_app/pages/inAppPurchase.dart';
+import 'package:chellenge_habit_app/pages/profilePage.dart';
+import 'package:chellenge_habit_app/pages/settingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -35,8 +38,11 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => AuthenticationPage(),
         '/signUp': (context) => SignUpScreen(),
         '/login': (context) => LoginScreen(),
-        "/profile": (context) => ProfileSetupScreen(),
+        "/profileSetup": (context) => ProfileSetupScreen(),
         '/notifications': (context) => NotificationTimePage(),
+        '/premiumPackages': (context) => PremiumUpgradeScreen(),
+        '/settings': (context) => SettingsScreen(),
+         '/profile': (context) => ProfileScreen()
       },
     );
   }
