@@ -20,6 +20,18 @@ class HabitTrackerScreen extends StatelessWidget {
             },
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/notifications');
+            },
+            icon: const Icon(Icons.notifications, color: Colors.white),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.nightlight_round, color: Colors.white),
+          ),
+        ],
       ),
       drawer: CustomSidebar(userName: "Thao Lee"),
       body: SafeArea(
@@ -28,30 +40,6 @@ class HabitTrackerScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Icons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.notifications,
-                            color: Colors.white),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.nightlight_round,
-                            color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               const SizedBox(height: 20),
 
               // Image and Text
@@ -157,7 +145,9 @@ class HabitTrackerScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/todayTask');
+                  },
                   child: const Text(
                     'Continue',
                     style: TextStyle(

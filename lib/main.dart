@@ -5,6 +5,9 @@ import 'package:chellenge_habit_app/pages/HiddenChallengesPage.dart';
 import 'package:chellenge_habit_app/pages/LogInPage.dart';
 import 'package:chellenge_habit_app/pages/ProfileSetup.dart';
 import 'package:chellenge_habit_app/pages/SignUpPage.dart';
+import 'package:chellenge_habit_app/pages/TodayTaskPage.dart';
+import 'package:chellenge_habit_app/pages/TrackerPage.dart';
+import 'package:chellenge_habit_app/pages/dashboardPage.dart';
 import 'package:chellenge_habit_app/pages/inAppPurchase.dart';
 import 'package:chellenge_habit_app/pages/profilePage.dart';
 import 'package:chellenge_habit_app/pages/settingsPage.dart';
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
-        '/home': (context) => HomePage(title: "Home Page"),
+        '/home': (context) => HabitSelectionScreen(userName: 'Thao Lee'),
         '/start': (context) => HabitTrackerStarterScreen(),
         '/auth': (context) => AuthenticationPage(),
         '/signUp': (context) => SignUpScreen(),
@@ -49,7 +52,9 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfileScreen(),
         "/addChellenge": (context) => NewChallengePage(),
         "/hiddenChellenges": (context) => HiddenChallenges(),
-        "/chellenges": (context) => ChallengesPage()
+        "/chellenges": (context) => ChallengesPage(),
+        "/todayTask": (context) => TodayTaskPage(),
+        "/tracker": (context) => HabitTrackerScreen(),
       },
     );
   }
