@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfileScreen(),
         "/addChellenge": (context) => NewChallengePage(),
         "/hiddenChellenges": (context) => HiddenChallenges(),
-        "/home": (context) => ChallengesPage()
+        "/chellenges": (context) => ChallengesPage()
       },
     );
   }
