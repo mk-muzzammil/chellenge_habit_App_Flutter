@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class HiddenChallenges extends StatefulWidget {
@@ -32,7 +34,16 @@ class _HiddenChallengesState extends State<HiddenChallenges> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Hidden Challenges"),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
       ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(

@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 
@@ -38,6 +40,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
                 const SnackBar(content: Text("Challenge Saved")),
               );
             },
+          
             child: const Text(
               "Save",
               style: TextStyle(
@@ -47,7 +50,17 @@ class _NewChallengePageState extends State<NewChallengePage> {
             ),
           ),
         ],
+           leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
       ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
