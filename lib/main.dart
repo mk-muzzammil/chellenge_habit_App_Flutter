@@ -1,4 +1,7 @@
+import 'package:chellenge_habit_app/pages/AddNewChallenges.dart';
 import 'package:chellenge_habit_app/pages/AuthenticationPage.dart';
+import 'package:chellenge_habit_app/pages/ChallengesPage.dart';
+import 'package:chellenge_habit_app/pages/HiddenChallengesPage.dart';
 import 'package:chellenge_habit_app/pages/LogInPage.dart';
 import 'package:chellenge_habit_app/pages/ProfileSetup.dart';
 import 'package:chellenge_habit_app/pages/SignUpPage.dart';
@@ -43,7 +46,10 @@ class MyApp extends StatelessWidget {
         '/notifications': (context) => NotificationTimePage(),
         '/premiumPackages': (context) => PremiumUpgradeScreen(),
         '/settings': (context) => SettingsScreen(),
-         '/profile': (context) => ProfileScreen()
+        '/profile': (context) => ProfileScreen(),
+        "/addChellenge": (context) => NewChallengePage(),
+        "/hiddenChellenges": (context) => HiddenChallenges(),
+        "/home": (context) => ChallengesPage()
       },
     );
   }
