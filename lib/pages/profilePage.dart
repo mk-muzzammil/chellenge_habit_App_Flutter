@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,11 +12,13 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            // Add your back button logic here
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
         title: Text("Profile", style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -25,6 +29,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: SingleChildScrollView(
         child: Column(
           children: [

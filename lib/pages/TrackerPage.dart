@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
@@ -7,6 +9,19 @@ class HabitTrackerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1C1C1E),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
+      ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),

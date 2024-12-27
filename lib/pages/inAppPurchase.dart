@@ -1,6 +1,6 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
-
-
 
 class PremiumUpgradeScreen extends StatefulWidget {
   @override
@@ -17,9 +17,13 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: Colors.white),
-          onPressed: () {}, // Close action
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
         actions: [
           TextButton(
@@ -28,6 +32,7 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
           ),
         ],
       ),
+       drawer: CustomSidebar(userName: "Thao Lee"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -65,15 +70,19 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
                 ),
               ),
               SizedBox(height: 30),
-              buildFeatureRow(Icons.block, "No Ads", "Enjoy surfing without annoying ads"),
+              buildFeatureRow(
+                  Icons.block, "No Ads", "Enjoy surfing without annoying ads"),
               buildFeatureRow(Icons.speed, "Fast", "Increase connection speed"),
-              buildFeatureRow(Icons.public, "All Servers", "Access all server worldwide"),
+              buildFeatureRow(
+                  Icons.public, "All Servers", "Access all server worldwide"),
               SizedBox(height: 20),
               // Plan selection
               Column(
                 children: [
-                  buildPlanDetails("1 MONTH", "\$9.99", "Link up to 2 Device", selectedPlan == "1 MONTH"),
-                  buildPlanDetails("1 YEAR", "\$99.99", "Link up to 4 Device", selectedPlan == "1 YEAR"),
+                  buildPlanDetails("1 MONTH", "\$9.99", "Link up to 2 Device",
+                      selectedPlan == "1 MONTH"),
+                  buildPlanDetails("1 YEAR", "\$99.99", "Link up to 4 Device",
+                      selectedPlan == "1 YEAR"),
                 ],
               ),
               SizedBox(height: 20),
@@ -122,7 +131,8 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: TextStyle(color: Colors.white, fontSize: 18)),
-              Text(subtitle, style: TextStyle(color: Colors.grey, fontSize: 14)),
+              Text(subtitle,
+                  style: TextStyle(color: Colors.grey, fontSize: 14)),
             ],
           ),
         ],
@@ -130,7 +140,8 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
     );
   }
 
-  Widget buildPlanDetails(String title, String price, String description, bool isSelected) {
+  Widget buildPlanDetails(
+      String title, String price, String description, bool isSelected) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -151,15 +162,18 @@ class _PremiumUpgradeScreenState extends State<PremiumUpgradeScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(color: Colors.white, fontSize: 18)),
+                Text(title,
+                    style: TextStyle(color: Colors.white, fontSize: 18)),
                 SizedBox(height: 5),
-                Text(description, style: TextStyle(color: Colors.grey, fontSize: 14)),
+                Text(description,
+                    style: TextStyle(color: Colors.grey, fontSize: 14)),
               ],
             ),
             // Price and Radio Icon
             Row(
               children: [
-                Text(price, style: TextStyle(color: Colors.white, fontSize: 18)),
+                Text(price,
+                    style: TextStyle(color: Colors.white, fontSize: 18)),
                 SizedBox(width: 10),
                 Radio<String>(
                   value: title,

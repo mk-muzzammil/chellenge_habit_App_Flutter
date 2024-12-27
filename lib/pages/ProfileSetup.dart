@@ -1,3 +1,4 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -33,11 +34,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
       ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(

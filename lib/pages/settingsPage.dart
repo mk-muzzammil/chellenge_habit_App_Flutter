@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,9 +20,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
+         leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
         title: const Text('Setting'),
         actions: [
@@ -33,6 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+       drawer: CustomSidebar(userName: "Thao Lee"),
       body: Container(
         color: const Color(0xFF121212),
         padding: const EdgeInsets.all(16.0),
