@@ -1,6 +1,6 @@
+import 'package:chellenge_habit_app/Database/databaseHandler.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,36 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
-
-  // Function to handle login
-  Future<void> _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    try {
-      final UserCredential userCredential =
-          await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Check if login is successful
-      if (userCredential.user != null) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Logged in successfully!')),
-        );
-        Navigator.pushNamed(context, '/profile');
-        // Navigate to the home page
-      }
-    } on FirebaseAuthException catch (e) {
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${e.message}')),
-      );
-    }
-  }
+  final AuthService _authService = AuthService(); // Create an instance of AuthService
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _login(); // Call login method
+                        _authService.login(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text.trim(),
+                          context: context,
+                        );
                       }
                     },
                     child: Text(
