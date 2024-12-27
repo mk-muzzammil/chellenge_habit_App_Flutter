@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'new_challeneg_tab.dart';
-import 'hidden_challenges.dart';
+import 'AddNewChallenges.dart';
 
 class ChallengesPage extends StatefulWidget {
   const ChallengesPage({super.key});
@@ -142,81 +141,81 @@ class InProgressTab extends StatelessWidget {
           Expanded(
             child: isGridView
                 ? GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.9,
-              children: const [
-                ChallengeCardGrid(
-                  title: "Drink water",
-                  subtitle: "Detox",
-                  progress: 0.75,
-                  current: 15,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardGrid(
-                  title: "Read Book",
-                  subtitle: "Focus",
-                  progress: 0.5,
-                  current: 10,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardGrid(
-                  title: "Do exercise",
-                  subtitle: "Change batteries",
-                  progress: 0.75,
-                  current: 15,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardGrid(
-                  title: "Meditation",
-                  subtitle: "Healthy mind & body",
-                  progress: 0.25,
-                  current: 5,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-              ],
-            )
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.9,
+                    children: const [
+                      ChallengeCardGrid(
+                        title: "Drink water",
+                        subtitle: "Detox",
+                        progress: 0.75,
+                        current: 15,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardGrid(
+                        title: "Read Book",
+                        subtitle: "Focus",
+                        progress: 0.5,
+                        current: 10,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardGrid(
+                        title: "Do exercise",
+                        subtitle: "Change batteries",
+                        progress: 0.75,
+                        current: 15,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardGrid(
+                        title: "Meditation",
+                        subtitle: "Healthy mind & body",
+                        progress: 0.25,
+                        current: 5,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                    ],
+                  )
                 : ListView(
-              children: const [
-                ChallengeCardList(
-                  title: "Drink water",
-                  subtitle: "Detox",
-                  progress: 0.75,
-                  current: 15,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardList(
-                  title: "Read Book",
-                  subtitle: "Focus",
-                  progress: 0.5,
-                  current: 10,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardList(
-                  title: "Do exercise",
-                  subtitle: "Change batteries",
-                  progress: 0.75,
-                  current: 15,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-                ChallengeCardList(
-                  title: "Meditation",
-                  subtitle: "Healthy mind & body",
-                  progress: 0.25,
-                  current: 5,
-                  total: 20,
-                  imagePath: 'assets/images/01.png',
-                ),
-              ],
-            ),
+                    children: const [
+                      ChallengeCardList(
+                        title: "Drink water",
+                        subtitle: "Detox",
+                        progress: 0.75,
+                        current: 15,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardList(
+                        title: "Read Book",
+                        subtitle: "Focus",
+                        progress: 0.5,
+                        current: 10,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardList(
+                        title: "Do exercise",
+                        subtitle: "Change batteries",
+                        progress: 0.75,
+                        current: 15,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                      ChallengeCardList(
+                        title: "Meditation",
+                        subtitle: "Healthy mind & body",
+                        progress: 0.25,
+                        current: 5,
+                        total: 20,
+                        imagePath: 'assets/images/01.png',
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -427,7 +426,7 @@ class ChallengeCardGrid extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 8.0), // For horizontal space
-                SizedBox(height: 8.0) ,// For vertical space
+                SizedBox(height: 8.0), // For vertical space
                 // Progress Bar
                 LinearProgressIndicator(
                   value: progress,
