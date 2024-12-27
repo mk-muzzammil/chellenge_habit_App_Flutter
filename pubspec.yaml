@@ -38,6 +38,7 @@ dependencies:
   firebase_database: ^11.2.0
   flutter_svg: ^2.0.16
   firebase_auth: ^5.3.4
+  dotted_border: ^2.0.0
 
 dev_dependencies:
   flutter_test:
