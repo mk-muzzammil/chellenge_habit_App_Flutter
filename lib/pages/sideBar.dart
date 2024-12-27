@@ -40,7 +40,7 @@ class CustomSidebar extends StatelessWidget {
               leading: Icon(Icons.flag, color: Colors.white),
               title: Text("Challenge", style: TextStyle(color: Colors.white)),
               onTap: () {
-                Navigator.pushNamed(context, '/premiumPackages');
+                Navigator.pushNamed(context, '/chellenges');
               },
             ),
             ListTile(
@@ -54,7 +54,7 @@ class CustomSidebar extends StatelessWidget {
               leading: Icon(Icons.visibility_off, color: Colors.white),
               title: Text("Hide Challenges", style: TextStyle(color: Colors.white)),
               onTap: () {
-                Navigator.pushNamed(context, '/notifications');
+                Navigator.pushNamed(context, '/hiddenChellenges');
               },
             ),
             ListTile(

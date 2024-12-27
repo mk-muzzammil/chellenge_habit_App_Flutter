@@ -21,7 +21,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Builder(
@@ -39,17 +39,6 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Button
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.04), // Responsive padding
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-            ),
-
             // Title
             Center(
               child: Padding(

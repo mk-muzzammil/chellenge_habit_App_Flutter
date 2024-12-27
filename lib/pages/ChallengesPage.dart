@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'AddNewChallenges.dart';
 
@@ -30,7 +32,17 @@ class _ChallengesPageState extends State<ChallengesPage> {
           ),
           const SizedBox(width: 16),
         ],
+           leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
       ),
+            drawer: CustomSidebar(userName: "Thao Lee"),
+
       body: Column(
         children: [
           // Custom Tab Bar
