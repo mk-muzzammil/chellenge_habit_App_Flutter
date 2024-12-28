@@ -36,11 +36,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   'Sign Up',
                   style: theme.textTheme.bodyLarge?.copyWith(

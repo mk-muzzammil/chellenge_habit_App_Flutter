@@ -24,7 +24,7 @@ class DatabaseService {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Logged in successfully!')),
         );
-        Navigator.pushNamed(context, '/profileSetup');
+        Navigator.pushNamed(context, '/home');
         return true; // Indicate success
       }
     } on FirebaseAuthException catch (e) {
@@ -52,7 +52,7 @@ class DatabaseService {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('User created successfully!')),
         );
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/profileSetup');
         return true; // Indicate success
       }
     } on FirebaseAuthException catch (e) {

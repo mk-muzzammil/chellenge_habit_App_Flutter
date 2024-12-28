@@ -230,7 +230,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                             iconSize: 36,
                             onPressed: _handleGoogleSignIn,
                           ),
-                          Text("SignIn with Google"),
                           // IconButton(
                           //   icon: SvgPicture.asset(
                           //     'assets/icons/facebook.svg',
