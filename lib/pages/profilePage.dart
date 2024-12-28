@@ -2,8 +2,6 @@ import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-
-
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

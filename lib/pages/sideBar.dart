@@ -1,9 +1,11 @@
+import 'package:chellenge_habit_app/Database/databaseHandler.dart';
 import 'package:flutter/material.dart';
 
 class CustomSidebar extends StatelessWidget {
   final String userName;
 
-  const CustomSidebar({Key? key, required this.userName}) : super(key: key);
+  CustomSidebar({Key? key, required this.userName}) : super(key: key);
+  DatabaseService _databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,8 @@ class CustomSidebar extends StatelessWidget {
                 backgroundColor: Colors.blue,
                 child: Icon(Icons.person, size: 40, color: Colors.white),
               ),
-              accountName: Text(userName, style: TextStyle(color: Colors.white)),
+              accountName:
+                  Text(userName, style: TextStyle(color: Colors.white)),
               accountEmail: null,
             ),
             ListTile(
@@ -45,14 +48,16 @@ class CustomSidebar extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.notifications, color: Colors.white),
-              title: Text("Notifications", style: TextStyle(color: Colors.white)),
+              title:
+                  Text("Notifications", style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pushNamed(context, '/notifications');
               },
             ),
             ListTile(
               leading: Icon(Icons.visibility_off, color: Colors.white),
-              title: Text("Hide Challenges", style: TextStyle(color: Colors.white)),
+              title: Text("Hide Challenges",
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pushNamed(context, '/hiddenChellenges');
               },
@@ -76,7 +81,7 @@ class CustomSidebar extends StatelessWidget {
               leading: Icon(Icons.logout, color: Colors.red),
               title: Text("Log out", style: TextStyle(color: Colors.red)),
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                _databaseService.signOut(context);
               },
             ),
           ],

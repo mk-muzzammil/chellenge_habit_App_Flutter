@@ -18,8 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final AuthService _authService =
-      AuthService(); // Create an instance of AuthService
+  final DatabaseService _databaseService =
+      DatabaseService(); // Create an instance of DatabaseService
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("Password does not match")));
                         } else {
-                          bool result = await _authService.signUp(
+                          bool result = await _databaseService.signUp(
                               email: email,
                               password: password,
                               context: context);

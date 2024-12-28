@@ -1,5 +1,8 @@
+import 'package:chellenge_habit_app/Database/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
@@ -12,6 +15,7 @@ class ProfileSetupScreen extends StatefulWidget {
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final DatabaseService _databaseService = DatabaseService();
   String? _selectedGender;
 
   @override
@@ -20,10 +24,20 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     super.dispose();
   }
 
-  void _handleContinue() {
+  void _handleContinue() async {
     if (_formKey.currentState!.validate() && _selectedGender != null) {
-      // Handle form submission
-      print('Name: ${_nameController.text}, Gender: $_selectedGender');
+      bool result = await _databaseService.saveProfileData(
+          Name: _nameController.text,
+          Gender: _selectedGender!,
+          context: context); // Call the method to save data
+      if (result) {
+        _nameController.clear();
+        _selectedGender = null;
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete the form')),
+      );
     }
   }
 
@@ -190,7 +204,7 @@ class _GenderCard extends StatelessWidget {
             ),
           ],
         ),
-      ), // Close Container
-    ); // Close GestureDetector
+      ),
+    );
   }
 }

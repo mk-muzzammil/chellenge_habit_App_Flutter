@@ -13,8 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final AuthService _authService =
-      AuthService(); // Create an instance of AuthService
+  final DatabaseService _databaseService =
+      DatabaseService(); // Create an instance of DatabaseService
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        bool result = await _authService.login(
+                        bool result = await _databaseService.login(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
                           context: context,
