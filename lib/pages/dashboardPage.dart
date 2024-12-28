@@ -1,20 +1,48 @@
+import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
-class HabitSelectionScreen extends StatelessWidget {
-  final String userName;
+class HabitSelectionScreen extends StatefulWidget {
+  const HabitSelectionScreen({super.key});
 
-  const HabitSelectionScreen({
-    super.key,
-    required this.userName,
-  });
+  @override
+  State<HabitSelectionScreen> createState() => _HabitSelectionScreenState();
+}
+
+class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
+  String? userName;
+  String? photoUrl;
+  bool isLoading = true;
+
+  final _databaseService = DatabaseService();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final userData = await _databaseService.fetchUserData();
+    if (userData != null) {
+      setState(() {
+        userName = userData['displayName'];
+        photoUrl = userData['photoURL'];
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      drawer: CustomSidebar(userName: userName), // Use CustomSidebar for drawer
+      drawer: CustomSidebar(userName: userName ?? 'Guest'),
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
@@ -39,12 +67,19 @@ class HabitSelectionScreen extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/icons/Avatar.png',
-                  width: 32, // Increased size for visibility
-                  height: 32,
-                  fit: BoxFit.cover,
-                ),
+                child: photoUrl != null
+                    ? Image.network(
+                        photoUrl!,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/icons/Avatar.png',
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
           ),
@@ -60,76 +95,74 @@ class HabitSelectionScreen extends StatelessWidget {
           color: AppColors.textPrimary,
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context, userName),
-              const SizedBox(height: 16),
-              Text(
-                'Choose first habit you want\nto build',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                    ),
-              ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.85,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _HabitCard(
-                      title: 'Exercise',
-                      status: 'Not Started',
-                      imagePath: 'assets/images/excercise.png',
-                      color: AppColors.primary,
-                      onTap: () {
-                        // Handle card tap for Exercise
-                        Navigator.pushNamed(context, "/tracker");
-                      },
+                    _buildHeader(context, userName ?? 'Guest'),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Choose the first habit you want\nto build',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 16,
+                          ),
                     ),
-                    _HabitCard(
-                      title: 'Reading Book',
-                      status: '5/20',
-                      imagePath: 'assets/images/readingBook.png',
-                      color: AppColors.skyBlue,
-                      onTap: () {
-                        // Handle card tap for Reading Book
-                        Navigator.pushNamed(context, "/tracker");
-                      },
-                    ),
-                    _HabitCard(
-                      title: 'Write Diary',
-                      status: 'Not Started',
-                      imagePath: 'assets/images/slider_4.png',
-                      color: AppColors.lightPink,
-                      onTap: () {
-                        // Handle card tap for Write Diary
-                        Navigator.pushNamed(context, "/tracker");
-                      },
-                    ),
-                    _HabitCard(
-                      title: 'Walking',
-                      status: '5/20',
-                      imagePath: 'assets/images/walking.png',
-                      color: AppColors.primaryLight,
-                      onTap: () {
-                        // Handle card tap for Walking
-                        Navigator.pushNamed(context, "/tracker");
-                      },
+                    const SizedBox(height: 24),
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 0.85,
+                        children: [
+                          _HabitCard(
+                            title: 'Exercise',
+                            status: 'Not Started',
+                            imagePath: 'assets/images/excercise.png',
+                            color: AppColors.primary,
+                            onTap: () {
+                              Navigator.pushNamed(context, "/tracker");
+                            },
+                          ),
+                          _HabitCard(
+                            title: 'Reading Book',
+                            status: '5/20',
+                            imagePath: 'assets/images/readingBook.png',
+                            color: AppColors.skyBlue,
+                            onTap: () {
+                              Navigator.pushNamed(context, "/tracker");
+                            },
+                          ),
+                          _HabitCard(
+                            title: 'Write Diary',
+                            status: 'Not Started',
+                            imagePath: 'assets/images/slider_4.png',
+                            color: AppColors.lightPink,
+                            onTap: () {
+                              Navigator.pushNamed(context, "/tracker");
+                            },
+                          ),
+                          _HabitCard(
+                            title: 'Walking',
+                            status: '5/20',
+                            imagePath: 'assets/images/walking.png',
+                            color: AppColors.primaryLight,
+                            onTap: () {
+                              Navigator.pushNamed(context, "/tracker");
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -173,20 +206,20 @@ class _HabitCard extends StatelessWidget {
   final String status;
   final String imagePath;
   final Color color;
-  final VoidCallback onTap; // Added onTap to make the card clickable
+  final VoidCallback onTap;
 
   const _HabitCard({
     required this.title,
     required this.status,
     required this.imagePath,
     required this.color,
-    required this.onTap, // Required parameter for tap callback
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Executes the onTap callback when the card is tapped
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
