@@ -175,7 +175,8 @@ class DatabaseService {
     // Save the data in Firebase Realtime Database
     final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
     await databaseRef.child('users/$uid').set({
-      'name': name,
+      'displayName': name,
+      'email': user.email,
       'gender': gender,
     }).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -191,5 +192,39 @@ class DatabaseService {
       return false;
     });
     return false;
+  }
+
+  Future<Map<String, dynamic>?> fetchUserData() async {
+    final User? user = _auth.currentUser;
+
+    if (user == null) return null;
+
+    try {
+      final DatabaseReference userRef = _database.child('users/${user.uid}');
+      final DataSnapshot snapshot = await userRef.get();
+
+      if (snapshot.exists) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+        print("Fetched User Data: $data"); // Print data to terminal
+        return data;
+      } else {
+        print("No data found for the user.");
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+    return null;
+  }
+
+  Future<void> updateUserData(Map<String, dynamic> data) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final userRef = _database.child('users/${user.uid}');
+      await userRef.update(data);
+    } catch (e) {
+      print("Error updating user data: $e");
+    }
   }
 }

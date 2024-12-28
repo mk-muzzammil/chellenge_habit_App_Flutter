@@ -31,11 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   'Log In',
                   style: theme.textTheme.bodyLarge?.copyWith(
