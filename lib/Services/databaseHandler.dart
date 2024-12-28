@@ -7,6 +7,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // Import Fac
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  final FirebaseDatabase _db = FirebaseDatabase.instance;
 
   Future<bool> login({
     required String email,
@@ -225,6 +226,29 @@ class DatabaseService {
       await userRef.update(data);
     } catch (e) {
       print("Error updating user data: $e");
+    }
+  }
+
+  // Method to save the challenge
+  Future<void> saveChallenge({
+    required String title,
+    required String description,
+    required List<String> tasks,
+    required int selectedDay,
+    String? imageUrl,
+  }) async {
+    try {
+      // Push new challenge data to the Firebase Realtime Database
+      await _db.ref('challenges').push().set({
+        'title': title,
+        'description': description,
+        'tasks': tasks,
+        'selectedDay': selectedDay,
+        'imageUrl': imageUrl, // Save the image URL if provided
+      });
+    } catch (e) {
+      print('Failed to save challenge: $e');
+      throw Exception('Failed to save challenge: $e');
     }
   }
 }

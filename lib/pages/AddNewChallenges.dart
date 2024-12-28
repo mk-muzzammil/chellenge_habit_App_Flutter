@@ -1,3 +1,4 @@
+import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +19,47 @@ class _NewChallengePageState extends State<NewChallengePage> {
   List<int> days = List.generate(17, (index) => index + 2); // Days from 2 to 18
   int? selectedDay;
   List<String> tasks = []; // Tracks the selected day
+  String? imageUrl; // Store the topic image URL
+  final DatabaseService _dbHandler =
+      DatabaseService(); // Create an instance of DatabaseService
+
   void addTask() {
     if (taskController.text.isNotEmpty) {
       setState(() {
         tasks.add(taskController.text);
         taskController.clear();
       });
+    }
+  }
+
+  // Method to save challenge using DatabaseService
+  Future<void> saveChallenge() async {
+    if (titleController.text.isNotEmpty &&
+        descriptionController.text.isNotEmpty &&
+        selectedDay != null) {
+      try {
+        // Call saveChallenge from DatabaseService
+        await _dbHandler.saveChallenge(
+          title: titleController.text,
+          description: descriptionController.text,
+          tasks: tasks,
+          selectedDay: selectedDay!,
+          imageUrl: imageUrl, // Pass the imageUrl if any
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Challenge Created")),
+        );
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
     }
   }
 
@@ -35,12 +71,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
         title: const Text("New Challenge"),
         actions: [
           TextButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Challenge Saved")),
-              );
-            },
-          
+            onPressed: saveChallenge, // Call saveChallenge when Save is pressed
             child: const Text(
               "Save",
               style: TextStyle(
@@ -50,7 +81,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
             ),
           ),
         ],
-           leading: Builder(
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu, color: AppColors.textPrimary),
             onPressed: () {
@@ -166,20 +197,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (titleController.text.isNotEmpty &&
-                        descriptionController.text.isNotEmpty &&
-                        selectedDay != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Challenge Created")),
-                      );
-                      Navigator.pop(context);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please fill all fields")),
-                      );
-                    }
-                  },
+                  onPressed: saveChallenge,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                   ),
