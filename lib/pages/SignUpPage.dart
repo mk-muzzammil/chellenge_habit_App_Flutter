@@ -1,4 +1,5 @@
 // signup_screen.dart
+import 'package:chellenge_habit_app/Database/databaseHandler.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,20 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  Future<void> _SignUpUser(String email, String password) async {
-    try {
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      if (credential.user != null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("User created successfully")));
-      }
-      Navigator.pushNamed(context, "/profile");
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign up failed: ${e.message}')));
-    }
-  }
+  final AuthService _authService =
+      AuthService(); // Create an instance of AuthService
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         String email = _emailController.text.trim().toString();
                         String password =
@@ -175,11 +164,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("Password does not match")));
                         } else {
-                          _SignUpUser(email, password);
-                        }
+                          bool result = await _authService.signUp(
+                              email: email,
+                              password: password,
+                              context: context);
 
-                        // Handle sign up
-                        Navigator.pushNamed(context, '/profile');
+                          if (result) {
+                            _emailController.clear();
+                            _passwordController.clear();
+                            _confirmPasswordController.clear();
+                          }
+                        }
                       }
                     },
                     child: Text(

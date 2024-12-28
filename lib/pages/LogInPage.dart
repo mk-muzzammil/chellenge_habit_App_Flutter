@@ -13,7 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final AuthService _authService = AuthService(); // Create an instance of AuthService
+  final AuthService _authService =
+      AuthService(); // Create an instance of AuthService
 
   @override
   Widget build(BuildContext context) {
@@ -137,13 +138,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        _authService.login(
+                        bool result = await _authService.login(
                           email: _emailController.text.trim(),
                           password: _passwordController.text.trim(),
                           context: context,
                         );
+                        if (result) {
+                          _emailController.clear();
+                          _passwordController.clear();
+                        }
                       }
                     },
                     child: Text(
