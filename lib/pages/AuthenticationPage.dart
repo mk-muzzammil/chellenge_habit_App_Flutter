@@ -1,4 +1,4 @@
-import 'package:chellenge_habit_app/Database/databaseHandler.dart';
+import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/colors.dart';
@@ -10,7 +10,7 @@ class AuthenticationPage extends StatefulWidget {
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
   final PageController _pageController = PageController();
-  final DatabaseService _databaseService = DatabaseService();
+  final _databaseService = DatabaseService();
   int _currentPage = 0;
   bool _isLoading = false;
 

@@ -1,3 +1,5 @@
+import 'package:chellenge_habit_app/Services/CloudinaryService.dart';
+import 'package:chellenge_habit_app/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -249,6 +251,47 @@ class DatabaseService {
     } catch (e) {
       print('Failed to save challenge: $e');
       throw Exception('Failed to save challenge: $e');
+    }
+  }
+
+  Future<void> uploadProfilePhoto({
+    required String filePath,
+    required BuildContext context,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User is not logged in')),
+      );
+      return;
+    }
+
+    try {
+      // Upload to Cloudinary
+      final CloudinaryService cloudinaryService = CloudinaryService();
+      final String? imageUrl = await cloudinaryService.uploadImage(
+        filePath,
+        AppConstants.cloudinaryUploadPreset,
+        fileName: 'profile_${user.uid}',
+      );
+
+      if (imageUrl != null) {
+        // Update the user's profile photo URL in Firebase
+        await _database
+            .child('users/${user.uid}')
+            .update({'photoURL': imageUrl});
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile photo updated successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to upload profile photo')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 }

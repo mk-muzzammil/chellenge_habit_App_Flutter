@@ -1,4 +1,4 @@
-import 'package:chellenge_habit_app/Database/databaseHandler.dart';
+import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +15,7 @@ class ProfileSetupScreen extends StatefulWidget {
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final DatabaseService _databaseService = DatabaseService();
+  final _databaseService = DatabaseService();
   String? _selectedGender;
 
   @override

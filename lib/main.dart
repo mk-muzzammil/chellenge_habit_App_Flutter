@@ -16,7 +16,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart'; // Import custom theme
 import 'pages/SplashScreen.dart';
-import 'pages/HomePage.dart';
 import 'pages/NotificationPage.dart';
 import 'pages/StarterPage.dart';
 

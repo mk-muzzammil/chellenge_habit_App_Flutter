@@ -32,7 +32,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
           ),
           const SizedBox(width: 16),
         ],
-           leading: Builder(
+        leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu, color: AppColors.textPrimary),
             onPressed: () {
@@ -41,8 +41,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
           ),
         ),
       ),
-            drawer: CustomSidebar(userName: "Thao Lee"),
-
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: Column(
         children: [
           // Custom Tab Bar

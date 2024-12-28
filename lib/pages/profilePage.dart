@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
+import 'package:image_picker/image_picker.dart'; // Import Image Picker
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -13,7 +14,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String email = "";
   String gender = "";
   String photoURL = "";
-  final DatabaseService _databaseService = DatabaseService();
+  final _databaseService = DatabaseService();
+  final ImagePicker _picker = ImagePicker(); // Image picker instance
 
   bool isEditingGender = false; // To track editing state
   TextEditingController genderController = TextEditingController();
@@ -58,6 +60,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> pickAndUploadPhoto() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        await _databaseService.uploadProfilePhoto(
+          filePath: image.path,
+          context: context,
+        );
+        fetchUserData(); // Refresh the user data to display the updated photo
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -94,33 +113,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               SizedBox(height: 20),
-              // Profile picture
+              // Profile picture with edit icon
               Center(
                 child: Stack(
-                  alignment: Alignment.center,
+                  alignment: Alignment.bottomRight,
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                    ),
                     ClipOval(
                       child: photoURL.isNotEmpty
                           ? Image.network(
                               photoURL,
-                              width: 100,
-                              height: 100,
+                              width: 120,
+                              height: 120,
                               fit: BoxFit.cover,
                             )
                           : Image.asset(
                               'assets/images/Avatar.png',
-                              width: 100,
-                              height: 100,
+                              width: 120,
+                              height: 120,
                               fit: BoxFit.cover,
                             ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: pickAndUploadPhoto,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.purple,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
