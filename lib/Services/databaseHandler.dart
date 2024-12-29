@@ -9,7 +9,6 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // Import Fac
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
-  final FirebaseDatabase _db = FirebaseDatabase.instance;
 
   Future<bool> login({
     required String email,
@@ -231,20 +230,36 @@ class DatabaseService {
     }
   }
 
-  // Method to save the challenge
   Future<void> saveChallenge({
     required String title,
     required String description,
     required List<Map<String, String>> tasksForDays,
+    required String? imageUrl, // New parameter for the challenge image
   }) async {
     try {
-      await _database.child("challenges").push().set({
+      await _database.child("challenges").child(title).set({
         "title": title,
         "description": description,
         "tasksForDays": tasksForDays,
+        "imageUrl": imageUrl, // Store the image URL
       });
     } catch (e) {
       throw Exception("Failed to save challenge: $e");
+    }
+  }
+
+  // Method to upload an image to Cloudinary and return the URL
+  Future<String?> uploadChallengeImage(String filePath) async {
+    try {
+      final CloudinaryService cloudinaryService = CloudinaryService();
+      final String? imageUrl = await cloudinaryService.uploadImage(
+        filePath,
+        AppConstants.cloudinaryUploadPreset,
+        fileName: 'challenge_image_${DateTime.now().millisecondsSinceEpoch}',
+      );
+      return imageUrl;
+    } catch (e) {
+      throw Exception("Failed to upload challenge image: $e");
     }
   }
 

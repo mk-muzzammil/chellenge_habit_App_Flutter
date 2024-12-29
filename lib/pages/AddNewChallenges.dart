@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:image_picker/image_picker.dart';
 
 class NewChallengePage extends StatefulWidget {
   const NewChallengePage({super.key});
@@ -16,13 +19,15 @@ class _NewChallengePageState extends State<NewChallengePage> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController taskController = TextEditingController();
 
-  final DatabaseService _dbHandler =
-      DatabaseService(); // Database handler instance
-
+  final DatabaseService _dbHandler = DatabaseService();
   List<Map<String, String>> tasksForDays = List.generate(
     18,
     (index) => {"day": "Day ${index + 1}", "task": ""},
-  ); // Tasks for each day
+  );
+
+  int? selectedDay;
+  File? selectedImage; // Stores the selected image file
+  String? imageUrl; // Stores the uploaded image URL
 
   // Add a task for the current day
   void addTask() {
@@ -38,24 +43,42 @@ class _NewChallengePageState extends State<NewChallengePage> {
     }
   }
 
-  int? selectedDay; // Tracks the selected day
+  // Pick an image using ImagePicker
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
-  // Method to save challenge to Firebase
+    if (pickedFile != null) {
+      setState(() {
+        selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Save the challenge, including image upload
   Future<void> saveChallenge() async {
     if (titleController.text.isNotEmpty &&
         descriptionController.text.isNotEmpty &&
         tasksForDays.any((day) => day['task']!.isNotEmpty)) {
       try {
+        // Upload the image if selected
+        if (selectedImage != null) {
+          imageUrl = await _dbHandler.uploadChallengeImage(selectedImage!.path);
+        }
+
+        // Save the challenge with the image URL
         await _dbHandler.saveChallenge(
           title: titleController.text,
           description: descriptionController.text,
           tasksForDays: tasksForDays,
+          imageUrl: imageUrl, // Include the image URL
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Challenge Created Successfully!")),
         );
-        Navigator.pop(context); // Go back to the previous screen
+        Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -100,15 +123,23 @@ class _NewChallengePageState extends State<NewChallengePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: DottedBorder(
-                  borderType: BorderType.Circle,
-                  dashPattern: const [6, 3],
-                  color: Colors.grey,
-                  strokeWidth: 2,
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey[800],
-                    child: const Icon(Icons.add, size: 32, color: Colors.white),
+                child: GestureDetector(
+                  onTap: pickImage,
+                  child: DottedBorder(
+                    borderType: BorderType.Circle,
+                    dashPattern: const [6, 3],
+                    color: Colors.grey,
+                    strokeWidth: 2,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.grey[800],
+                      backgroundImage: selectedImage != null
+                          ? FileImage(selectedImage!)
+                          : null,
+                      child: selectedImage == null
+                          ? const Icon(Icons.add, size: 32, color: Colors.white)
+                          : null,
+                    ),
                   ),
                 ),
               ),
