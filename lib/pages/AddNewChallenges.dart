@@ -16,41 +16,46 @@ class _NewChallengePageState extends State<NewChallengePage> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController taskController = TextEditingController();
 
-  List<int> days = List.generate(17, (index) => index + 2); // Days from 2 to 18
-  int? selectedDay;
-  List<String> tasks = []; // Tracks the selected day
-  String? imageUrl; // Store the topic image URL
   final DatabaseService _dbHandler =
-      DatabaseService(); // Create an instance of DatabaseService
+      DatabaseService(); // Database handler instance
 
+  List<Map<String, String>> tasksForDays = List.generate(
+    18,
+    (index) => {"day": "Day ${index + 1}", "task": ""},
+  ); // Tasks for each day
+
+  // Add a task for the current day
   void addTask() {
     if (taskController.text.isNotEmpty) {
       setState(() {
-        tasks.add(taskController.text);
+        tasksForDays[selectedDay! - 1]['task'] = taskController.text;
         taskController.clear();
       });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Task cannot be empty")),
+      );
     }
   }
 
-  // Method to save challenge using DatabaseService
+  int? selectedDay; // Tracks the selected day
+
+  // Method to save challenge to Firebase
   Future<void> saveChallenge() async {
     if (titleController.text.isNotEmpty &&
         descriptionController.text.isNotEmpty &&
-        selectedDay != null) {
+        tasksForDays.any((day) => day['task']!.isNotEmpty)) {
       try {
-        // Call saveChallenge from DatabaseService
         await _dbHandler.saveChallenge(
           title: titleController.text,
           description: descriptionController.text,
-          tasks: tasks,
-          selectedDay: selectedDay!,
-          imageUrl: imageUrl, // Pass the imageUrl if any
+          tasksForDays: tasksForDays,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Challenge Created")),
+          const SnackBar(content: Text("Challenge Created Successfully!")),
         );
-        Navigator.pop(context);
+        Navigator.pop(context); // Go back to the previous screen
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -58,7 +63,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
+        const SnackBar(content: Text("Please fill all fields and add tasks")),
       );
     }
   }
@@ -66,18 +71,15 @@ class _NewChallengePageState extends State<NewChallengePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Adjust layout when keyboard opens
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("New Challenge"),
         actions: [
           TextButton(
-            onPressed: saveChallenge, // Call saveChallenge when Save is pressed
+            onPressed: saveChallenge,
             child: const Text(
               "Save",
-              style: TextStyle(
-                color: Colors.purple,
-                fontFamily: 'Inter',
-              ),
+              style: TextStyle(color: Colors.purple, fontFamily: 'Inter'),
             ),
           ),
         ],
@@ -90,8 +92,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
           ),
         ),
       ),
-      drawer: CustomSidebar(userName: "Thao Lee"),
-
+      drawer: CustomSidebar(userName: ""),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -134,7 +135,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
                     child: TextField(
                       controller: taskController,
                       decoration: const InputDecoration(
-                        labelText: "Enter your task",
+                        labelText: "Enter Task for Selected Day",
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -147,23 +148,19 @@ class _NewChallengePageState extends State<NewChallengePage> {
               ),
               const SizedBox(height: 16),
               const Text(
-                "Days:",
-                style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+                "Select Day and View Tasks:",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: days.length,
+                itemCount: tasksForDays.length,
                 itemBuilder: (context, index) {
-                  int day = days[index];
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        selectedDay = day;
+                        selectedDay = index + 1;
                       });
                     },
                     child: Container(
@@ -171,19 +168,15 @@ class _NewChallengePageState extends State<NewChallengePage> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: selectedDay == day
+                        color: selectedDay == index + 1
                             ? Colors.purple
                             : Colors.grey[900],
                         borderRadius: BorderRadius.circular(8),
-                        border: selectedDay == day
-                            ? Border.all(color: Colors.white, width: 2)
-                            : null,
                       ),
                       child: Text(
-                        "Day $day",
+                        "Day ${index + 1}: ${tasksForDays[index]['task']}",
                         style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: selectedDay == day
+                          color: selectedDay == index + 1
                               ? Colors.white
                               : Colors.grey[400],
                           fontWeight: FontWeight.bold,

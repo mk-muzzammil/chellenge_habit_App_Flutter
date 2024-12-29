@@ -235,22 +235,16 @@ class DatabaseService {
   Future<void> saveChallenge({
     required String title,
     required String description,
-    required List<String> tasks,
-    required int selectedDay,
-    String? imageUrl,
+    required List<Map<String, String>> tasksForDays,
   }) async {
     try {
-      // Push new challenge data to the Firebase Realtime Database
-      await _db.ref('challenges').push().set({
-        'title': title,
-        'description': description,
-        'tasks': tasks,
-        'selectedDay': selectedDay,
-        'imageUrl': imageUrl, // Save the image URL if provided
+      await _database.child("challenges").push().set({
+        "title": title,
+        "description": description,
+        "tasksForDays": tasksForDays,
       });
     } catch (e) {
-      print('Failed to save challenge: $e');
-      throw Exception('Failed to save challenge: $e');
+      throw Exception("Failed to save challenge: $e");
     }
   }
 
