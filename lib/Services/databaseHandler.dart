@@ -9,6 +9,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // Import Fac
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  final DatabaseReference _challengesRef =
+      FirebaseDatabase.instance.ref('challenges');
 
   Future<bool> login({
     required String email,
@@ -302,5 +304,82 @@ class DatabaseService {
         SnackBar(content: Text('Error: $e')),
       );
     }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchChallenges() async {
+    try {
+      final DataSnapshot snapshot = await _database.child("challenges").get();
+      if (snapshot.exists) {
+        final List<Map<String, dynamic>> challenges = [];
+        final data = snapshot.value as Map<dynamic, dynamic>;
+
+        data.forEach((key, value) {
+          challenges.add({
+            "title": value["title"],
+            "description": value["description"],
+            "tasksForDays": value["tasksForDays"],
+            "imageUrl": value["imageUrl"],
+          });
+        });
+
+        return challenges;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch challenges: $e");
+    }
+  }
+
+  // Stream<List<Map<String, dynamic>>> fetchChallengesRealTime() {
+  //   return _challengesRef.onValue.map((event) {
+  //     final data = event.snapshot.value as Map?;
+  //     if (data != null) {
+  //       List<Map<String, dynamic>> challenges = [];
+  //       data.forEach((key, value) {
+  //         challenges.add({
+  //           'title': value['title'],
+  //           'description': value['description'],
+  //           'imageUrl': value['imageUrl'],
+  //           // Add other properties as needed
+  //         });
+  //       });
+  //       return challenges;
+  //     }
+  //     return [];
+  //   });
+  // }
+  Future<void> updateChallengeVisibility(String title, bool isHidden) async {
+    try {
+      await _challengesRef.child(title).update({
+        'isHidden': isHidden,
+      });
+    } catch (e) {
+      throw Exception("Failed to update challenge visibility: $e");
+    }
+  }
+
+  Stream<List<Map<String, dynamic>>> fetchChallengesRealTime(
+      {bool showHidden = false}) {
+    return _challengesRef.onValue.map((event) {
+      final data = event.snapshot.value as Map?;
+      if (data != null) {
+        List<Map<String, dynamic>> challenges = [];
+        data.forEach((key, value) {
+          // Only add challenges based on their hidden status
+          bool isHidden = value['isHidden'] ?? false;
+          if ((!showHidden && !isHidden) || (showHidden && isHidden)) {
+            challenges.add({
+              'title': value['title'],
+              'description': value['description'],
+              'imageUrl': value['imageUrl'],
+              'isHidden': isHidden,
+            });
+          }
+        });
+        return challenges;
+      }
+      return [];
+    });
   }
 }

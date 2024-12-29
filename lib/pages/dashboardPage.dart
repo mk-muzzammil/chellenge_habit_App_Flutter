@@ -14,6 +14,7 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
   String? userName;
   String? photoUrl;
   bool isLoading = true;
+  List<Map<String, dynamic>> _challenges = [];
 
   final _databaseService = DatabaseService();
 
@@ -21,6 +22,7 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
   void initState() {
     super.initState();
     fetchUserData();
+    listenForChallenges();
   }
 
   Future<void> fetchUserData() async {
@@ -29,12 +31,37 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
       setState(() {
         userName = userData['displayName'];
         photoUrl = userData['photoURL'];
-        isLoading = false;
       });
-    } else {
+    }
+  }
+
+  void listenForChallenges() {
+    _databaseService
+        .fetchChallengesRealTime(showHidden: false)
+        .listen((challenges) {
       setState(() {
+        _challenges = challenges;
         isLoading = false;
       });
+    });
+  }
+
+  Future<void> _handleVisibilityChange(String title, bool isHidden) async {
+    try {
+      await _databaseService.updateChallengeVisibility(title, isHidden);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isHidden ? 'Challenge hidden' : 'Challenge visible'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating challenge visibility: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -114,49 +141,32 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
                     ),
                     const SizedBox(height: 24),
                     Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.85,
-                        children: [
-                          _HabitCard(
-                            title: 'Exercise',
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: 0.85,
+                        ),
+                        itemCount: _challenges.length,
+                        itemBuilder: (context, index) {
+                          final challenge = _challenges[index];
+                          return _HabitCard(
+                            title: challenge['title'],
                             status: 'Not Started',
-                            imagePath: 'assets/images/excercise.png',
+                            imagePath: challenge['imageUrl'] ??
+                                'assets/images/placeholder.png',
                             color: AppColors.primary,
+                            isHidden: challenge['isHidden'] ?? false,
+                            onVisibilityChanged: (isHidden) =>
+                                _handleVisibilityChange(
+                                    challenge['title'], isHidden),
                             onTap: () {
                               Navigator.pushNamed(context, "/tracker");
                             },
-                          ),
-                          _HabitCard(
-                            title: 'Reading Book',
-                            status: '5/20',
-                            imagePath: 'assets/images/readingBook.png',
-                            color: AppColors.skyBlue,
-                            onTap: () {
-                              Navigator.pushNamed(context, "/tracker");
-                            },
-                          ),
-                          _HabitCard(
-                            title: 'Write Diary',
-                            status: 'Not Started',
-                            imagePath: 'assets/images/slider_4.png',
-                            color: AppColors.lightPink,
-                            onTap: () {
-                              Navigator.pushNamed(context, "/tracker");
-                            },
-                          ),
-                          _HabitCard(
-                            title: 'Walking',
-                            status: '5/20',
-                            imagePath: 'assets/images/walking.png',
-                            color: AppColors.primaryLight,
-                            onTap: () {
-                              Navigator.pushNamed(context, "/tracker");
-                            },
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -207,6 +217,8 @@ class _HabitCard extends StatelessWidget {
   final String imagePath;
   final Color color;
   final VoidCallback onTap;
+  final Function(bool) onVisibilityChanged;
+  final bool isHidden;
 
   const _HabitCard({
     required this.title,
@@ -214,6 +226,8 @@ class _HabitCard extends StatelessWidget {
     required this.imagePath,
     required this.color,
     required this.onTap,
+    required this.onVisibilityChanged,
+    this.isHidden = false,
   });
 
   @override
@@ -225,43 +239,66 @@ class _HabitCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    child: imagePath.startsWith('http') ||
+                            imagePath.startsWith('https')
+                        ? Image.network(
+                            imagePath,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            imagePath,
+                            fit: BoxFit.contain,
+                          ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        status,
+                        style: TextStyle(
+                          color: status.contains('/')
+                              ? color
+                              : AppColors.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    status,
-                    style: TextStyle(
-                      color: status.contains('/')
-                          ? color
-                          : AppColors.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                icon: Icon(
+                  isHidden ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.textPrimary,
+                ),
+                onPressed: () {
+                  onVisibilityChanged(!isHidden);
+                },
               ),
             ),
           ],
