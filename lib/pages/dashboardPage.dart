@@ -152,21 +152,36 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
                         itemCount: _challenges.length,
                         itemBuilder: (context, index) {
                           final challenge = _challenges[index];
+                          final bool isStarted = challenge['isStarted'] == true;
+                          final List<dynamic> tasks =
+                              challenge['tasksForDays'] ?? [];
+                          // Build status string
+                          String statusText = 'Not Started';
+                          if (isStarted) {
+                            // Calculate completed tasks
+                            final total = tasks.length;
+                            final completedCount = tasks
+                                .where((element) =>
+                                    (element['completed'] ?? false) == true)
+                                .length;
+                            statusText = '$completedCount/$total';
+                          }
+
                           return _HabitCard(
                             title: challenge['title'],
-                            status: 'Not Started',
+                            status: statusText,
                             imagePath: challenge['imageUrl'] ??
                                 'assets/images/placeholder.png',
                             color: AppColors.primary,
                             isHidden: challenge['isHidden'] ?? false,
-                            onVisibilityChanged: (isHidden) =>
+                            onVisibilityChanged: (newHiddenStatus) =>
                                 _handleVisibilityChange(
-                                    challenge['title'], isHidden),
+                                    challenge['title'], newHiddenStatus),
                             onTap: () {
-                              // -------- NEW CODE: PASS THE CHALLENGE TO THE TRACKER PAGE
+                              // Go to the tracker
                               Navigator.pushNamed(
                                 context,
-                                "/tracker",
+                                '/tracker',
                                 arguments: challenge,
                               );
                             },

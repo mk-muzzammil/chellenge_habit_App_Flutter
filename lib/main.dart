@@ -30,7 +30,7 @@ void main() async {
 
   // 2. Initialize Awesome Notifications
   AwesomeNotifications().initialize(
-    null, // Use default icon for notifications (ensure to add one in drawable folder for Android)
+    null, // Use default icon for notifications (ensure you have one in your drawable folder)
     [
       NotificationChannel(
         channelKey: 'challenge_reminder',
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
-        '/home': (context) => HabitSelectionScreen(),
+        '/home': (context) => const HabitSelectionScreen(),
         '/start': (context) => HabitTrackerStarterScreen(),
         '/auth': (context) => AuthenticationPage(),
         '/signUp': (context) => SignUpScreen(),
@@ -78,6 +78,7 @@ class MyApp extends StatelessWidget {
         "/addChellenge": (context) => NewChallengePage(),
         "/hiddenChellenges": (context) => HiddenChallenges(),
         "/chellenges": (context) => ChallengesPage(),
+        // The main Habit dashboard
         "/todayTask": (context) => const TodayTaskPage(),
         "/tracker": (context) => const HabitTrackerScreen(),
       },
