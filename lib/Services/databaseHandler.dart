@@ -203,7 +203,6 @@ class DatabaseService {
 
   Future<Map<String, dynamic>?> fetchUserData() async {
     final User? user = _auth.currentUser;
-
     if (user == null) return null;
 
     try {
@@ -212,7 +211,6 @@ class DatabaseService {
 
       if (snapshot.exists) {
         final data = Map<String, dynamic>.from(snapshot.value as Map);
-        print("Fetched User Data: $data");
         return data;
       } else {
         print("No data found for the user.");
@@ -235,7 +233,7 @@ class DatabaseService {
     }
   }
 
-  // ------------------- CHALLENGE & IMAGE METHODS (unchanged) -------------------
+  // ------------------- CHALLENGE & IMAGE METHODS (unchanged, except for isStarted) -------------------
   Future<void> saveChallenge({
     required String title,
     required String description,
@@ -250,12 +248,15 @@ class DatabaseService {
         "description": description,
         "tasksForDays": tasksForDays,
         "imageUrl": imageUrl,
+        // By default, challenge is not started
+        "isStarted": false,
       });
     } catch (e) {
       throw Exception("Failed to save challenge: $e");
     }
   }
 
+  // If you upload images to Cloudinary
   Future<String?> uploadChallengeImage(String filePath) async {
     try {
       final CloudinaryService cloudinaryService = CloudinaryService();
@@ -309,38 +310,81 @@ class DatabaseService {
     }
   }
 
-  // Future<List<Map<String, dynamic>>> fetchChallenges() async {
-  //   try {
-  //     final User? user = _auth.currentUser;
-  //     if (user == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('User is not logged in')),
-  //     );
-  //     return;
-  //   }
-  //     final DataSnapshot snapshot = await _database.child("challenges/${user.uid}").get();
-  //     if (snapshot.exists) {
-  //       final List<Map<String, dynamic>> challenges = [];
-  //       final data = snapshot.value as Map<dynamic, dynamic>;
+  /// ------------------- START A CHALLENGE -------------------
+  /// Mark isStarted = true and create default tasksForDays if empty
+  Future<void> startChallenge(String challengeTitle) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
 
-  //       data.forEach((key, value) {
-  //         challenges.add({
-  //           "title": value["title"],
-  //           "description": value["description"],
-  //           "tasksForDays": value["tasksForDays"],
-  //           "imageUrl": value["imageUrl"],
-  //         });
-  //       });
+    try {
+      final userChallengeRef =
+          _challengesRef.child(user.uid).child(challengeTitle);
 
-  //       return challenges;
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (e) {
-  //     throw Exception("Failed to fetch challenges: $e");
-  //   }
-  // }
+      // Check current data
+      final snapshot = await userChallengeRef.get();
+      if (!snapshot.exists) return;
 
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      bool? isStarted = data['isStarted'] as bool?;
+      if (isStarted == true) {
+        // Already started, do nothing
+        return;
+      }
+
+      List<dynamic>? tasksForDays = data['tasksForDays'] as List<dynamic>?;
+
+      // If tasksForDays is empty, create 18 days with 'completed=false'
+      if (tasksForDays == null || tasksForDays.isEmpty) {
+        tasksForDays = List.generate(18, (index) {
+          return {
+            'day': index + 1,
+            'completed': false,
+          };
+        });
+      }
+
+      await userChallengeRef.update({
+        'isStarted': true,
+        'startTime': DateTime.now().toIso8601String(),
+        'tasksForDays': tasksForDays,
+      });
+    } catch (e) {
+      print("Error starting challenge: $e");
+    }
+  }
+
+  /// ------------------- COMPLETE A GIVEN DAY -------------------
+  /// Marks tasksForDays[dayIndex] as completed (0-based index).
+  Future<void> completeDayTask(String challengeTitle, int dayIndex) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final userChallengeRef =
+          _challengesRef.child(user.uid).child(challengeTitle);
+      final snapshot = await userChallengeRef.get();
+      if (!snapshot.exists) return; // No such challenge
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      List<dynamic> tasksForDays = data['tasksForDays'] ?? [];
+
+      // Safety checks
+      if (dayIndex < 0 || dayIndex >= tasksForDays.length) {
+        print("Day index is out of range. Cannot complete task.");
+        return;
+      }
+
+      // Mark the requested day as completed
+      tasksForDays[dayIndex]['completed'] = true;
+
+      // Update in Firebase
+      await userChallengeRef.update({'tasksForDays': tasksForDays});
+    } catch (e) {
+      print("Error completing day task: $e");
+    }
+  }
+
+  // ------------------- Notifications logic (unchanged) -------------------
   Future<void> saveChallengeNotificationTime(
     String challengeTitle,
     int hour12,
@@ -361,11 +405,6 @@ class DatabaseService {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Schedule Notification (Hardcoded Body)
-  // ---------------------------------------------------------------------------
-  /// Schedules a daily notification. The notification title = [challengeTitle].
-  /// The body is a hardcoded call-to-action quote.
   Future<void> scheduleChallengeNotification(
     String challengeTitle,
     int hour12,
@@ -383,9 +422,7 @@ class DatabaseService {
       content: NotificationContent(
         id: notificationId,
         channelKey: 'challenge_reminder',
-        // Title is the challenge title
         title: challengeTitle,
-        // Hardcoded call-to-action
         body: 'Keep going and become unstoppable!',
         wakeUpScreen: true,
         category: NotificationCategory.Reminder,
@@ -414,8 +451,9 @@ class DatabaseService {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> fetchChallengesRealTime(
-      {bool showHidden = false}) {
+  Stream<List<Map<String, dynamic>>> fetchChallengesRealTime({
+    bool showHidden = false,
+  }) {
     final User? user = _auth.currentUser;
     if (user == null) return Stream.empty();
 
@@ -425,12 +463,17 @@ class DatabaseService {
         List<Map<String, dynamic>> challenges = [];
         data.forEach((key, value) {
           bool isHidden = value['isHidden'] ?? false;
+
+          // If we do not want to show hidden, skip them
           if ((!showHidden && !isHidden) || (showHidden && isHidden)) {
             challenges.add({
               'title': value['title'],
               'description': value['description'],
               'imageUrl': value['imageUrl'],
               'isHidden': isHidden,
+              'isStarted': value['isStarted'] ?? false,
+              'tasksForDays': value['tasksForDays'] ?? [],
+              'startTime': value['startTime'],
             });
           }
         });
