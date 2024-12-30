@@ -243,7 +243,9 @@ class DatabaseService {
     required String? imageUrl,
   }) async {
     try {
-      await _database.child("challenges").child(title).set({
+      final User? user = _auth.currentUser;
+      if (user == null) return;
+      await _database.child("challenges").child(user.uid).child(title).set({
         "title": title,
         "description": description,
         "tasksForDays": tasksForDays,
@@ -307,30 +309,37 @@ class DatabaseService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchChallenges() async {
-    try {
-      final DataSnapshot snapshot = await _database.child("challenges").get();
-      if (snapshot.exists) {
-        final List<Map<String, dynamic>> challenges = [];
-        final data = snapshot.value as Map<dynamic, dynamic>;
+  // Future<List<Map<String, dynamic>>> fetchChallenges() async {
+  //   try {
+  //     final User? user = _auth.currentUser;
+  //     if (user == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('User is not logged in')),
+  //     );
+  //     return;
+  //   }
+  //     final DataSnapshot snapshot = await _database.child("challenges/${user.uid}").get();
+  //     if (snapshot.exists) {
+  //       final List<Map<String, dynamic>> challenges = [];
+  //       final data = snapshot.value as Map<dynamic, dynamic>;
 
-        data.forEach((key, value) {
-          challenges.add({
-            "title": value["title"],
-            "description": value["description"],
-            "tasksForDays": value["tasksForDays"],
-            "imageUrl": value["imageUrl"],
-          });
-        });
+  //       data.forEach((key, value) {
+  //         challenges.add({
+  //           "title": value["title"],
+  //           "description": value["description"],
+  //           "tasksForDays": value["tasksForDays"],
+  //           "imageUrl": value["imageUrl"],
+  //         });
+  //       });
 
-        return challenges;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Failed to fetch challenges: $e");
-    }
-  }
+  //       return challenges;
+  //     } else {
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("Failed to fetch challenges: $e");
+  //   }
+  // }
 
   Future<void> saveChallengeNotificationTime(
     String challengeTitle,
@@ -395,7 +404,9 @@ class DatabaseService {
   // ------------------- VISIBILITY & STREAM METHODS (unchanged) -------------------
   Future<void> updateChallengeVisibility(String title, bool isHidden) async {
     try {
-      await _challengesRef.child(title).update({
+      final User? user = _auth.currentUser;
+      if (user == null) return;
+      await _challengesRef.child(user.uid).child(title).update({
         'isHidden': isHidden,
       });
     } catch (e) {
@@ -405,7 +416,10 @@ class DatabaseService {
 
   Stream<List<Map<String, dynamic>>> fetchChallengesRealTime(
       {bool showHidden = false}) {
-    return _challengesRef.onValue.map((event) {
+    final User? user = _auth.currentUser;
+    if (user == null) return Stream.empty();
+
+    return _challengesRef.child(user.uid).onValue.map((event) {
       final data = event.snapshot.value as Map?;
       if (data != null) {
         List<Map<String, dynamic>> challenges = [];
