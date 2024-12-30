@@ -163,7 +163,12 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
                                 _handleVisibilityChange(
                                     challenge['title'], isHidden),
                             onTap: () {
-                              Navigator.pushNamed(context, "/tracker");
+                              // -------- NEW CODE: PASS THE CHALLENGE TO THE TRACKER PAGE
+                              Navigator.pushNamed(
+                                context,
+                                "/tracker",
+                                arguments: challenge,
+                              );
                             },
                           );
                         },
@@ -248,8 +253,7 @@ class _HabitCard extends StatelessWidget {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
-                    child: imagePath.startsWith('http') ||
-                            imagePath.startsWith('https')
+                    child: imagePath.startsWith('http')
                         ? Image.network(
                             imagePath,
                             fit: BoxFit.contain,

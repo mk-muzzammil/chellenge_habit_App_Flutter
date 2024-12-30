@@ -19,11 +19,37 @@ import 'pages/SplashScreen.dart';
 import 'pages/NotificationPage.dart';
 import 'pages/StarterPage.dart';
 
+// 1. Import awesome_notifications
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // 2. Initialize Awesome Notifications
+  AwesomeNotifications().initialize(
+    null, // Use default icon for notifications (ensure to add one in drawable folder for Android)
+    [
+      NotificationChannel(
+        channelKey: 'challenge_reminder',
+        channelName: 'Challenge Reminders',
+        channelDescription: 'Channel for daily challenge reminders',
+        defaultColor: Colors.deepPurple,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+      ),
+    ],
+  );
+
+  // 3. Request notification permission at startup (optional)
+  bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+  if (!isAllowed) {
+    // This will prompt a native dialog (especially on iOS).
+    await AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+
   runApp(const MyApp());
 }
 
@@ -52,8 +78,8 @@ class MyApp extends StatelessWidget {
         "/addChellenge": (context) => NewChallengePage(),
         "/hiddenChellenges": (context) => HiddenChallenges(),
         "/chellenges": (context) => ChallengesPage(),
-        "/todayTask": (context) => TodayTaskPage(),
-        "/tracker": (context) => HabitTrackerScreen(),
+        "/todayTask": (context) => const TodayTaskPage(),
+        "/tracker": (context) => const HabitTrackerScreen(),
       },
     );
   }

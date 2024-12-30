@@ -4,7 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // Import Facebook Auth
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
+// 1. Import awesome_notifications
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
@@ -12,6 +15,7 @@ class DatabaseService {
   final DatabaseReference _challengesRef =
       FirebaseDatabase.instance.ref('challenges');
 
+  // ------------------- AUTH METHODS (unchanged) -------------------
   Future<bool> login({
     required String email,
     required String password,
@@ -157,24 +161,24 @@ class DatabaseService {
     return null;
   }
 
+  // ------------------- PROFILE METHODS (unchanged) -------------------
   Future<bool> saveProfileData({
     required String Name,
     required String Gender,
     required BuildContext context,
   }) async {
-    final user = FirebaseAuth.instance.currentUser; // Get the current user
+    final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      // Handle case where user is not logged in
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User is not logged in')),
       );
       return false;
     }
 
-    final String uid = user.uid; // Get the user's UID
+    final String uid = user.uid;
     final String name = Name;
-    final String gender = Gender!;
+    final String gender = Gender;
 
     // Save the data in Firebase Realtime Database
     final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
@@ -186,8 +190,7 @@ class DatabaseService {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile data saved successfully')),
       );
-      Navigator.of(context)
-          .pushReplacementNamed('/home'); // Navigate to the home screen
+      Navigator.of(context).pushReplacementNamed('/home');
       return true;
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -209,7 +212,7 @@ class DatabaseService {
 
       if (snapshot.exists) {
         final data = Map<String, dynamic>.from(snapshot.value as Map);
-        print("Fetched User Data: $data"); // Print data to terminal
+        print("Fetched User Data: $data");
         return data;
       } else {
         print("No data found for the user.");
@@ -232,25 +235,25 @@ class DatabaseService {
     }
   }
 
+  // ------------------- CHALLENGE & IMAGE METHODS (unchanged) -------------------
   Future<void> saveChallenge({
     required String title,
     required String description,
     required List<Map<String, String>> tasksForDays,
-    required String? imageUrl, // New parameter for the challenge image
+    required String? imageUrl,
   }) async {
     try {
       await _database.child("challenges").child(title).set({
         "title": title,
         "description": description,
         "tasksForDays": tasksForDays,
-        "imageUrl": imageUrl, // Store the image URL
+        "imageUrl": imageUrl,
       });
     } catch (e) {
       throw Exception("Failed to save challenge: $e");
     }
   }
 
-  // Method to upload an image to Cloudinary and return the URL
   Future<String?> uploadChallengeImage(String filePath) async {
     try {
       final CloudinaryService cloudinaryService = CloudinaryService();
@@ -278,7 +281,6 @@ class DatabaseService {
     }
 
     try {
-      // Upload to Cloudinary
       final CloudinaryService cloudinaryService = CloudinaryService();
       final String? imageUrl = await cloudinaryService.uploadImage(
         filePath,
@@ -287,7 +289,6 @@ class DatabaseService {
       );
 
       if (imageUrl != null) {
-        // Update the user's profile photo URL in Firebase
         await _database
             .child('users/${user.uid}')
             .update({'photoURL': imageUrl});
@@ -331,24 +332,67 @@ class DatabaseService {
     }
   }
 
-  // Stream<List<Map<String, dynamic>>> fetchChallengesRealTime() {
-  //   return _challengesRef.onValue.map((event) {
-  //     final data = event.snapshot.value as Map?;
-  //     if (data != null) {
-  //       List<Map<String, dynamic>> challenges = [];
-  //       data.forEach((key, value) {
-  //         challenges.add({
-  //           'title': value['title'],
-  //           'description': value['description'],
-  //           'imageUrl': value['imageUrl'],
-  //           // Add other properties as needed
-  //         });
-  //       });
-  //       return challenges;
-  //     }
-  //     return [];
-  //   });
-  // }
+  Future<void> saveChallengeNotificationTime(
+    String challengeTitle,
+    int hour12,
+    int minute,
+    bool isAm,
+  ) async {
+    try {
+      final DatabaseReference challengeRef =
+          _challengesRef.child(challengeTitle).child('notificationData');
+
+      await challengeRef.update({
+        'notificationHour': hour12,
+        'notificationMinute': minute,
+        'notificationIsAm': isAm,
+      });
+    } catch (e) {
+      print("Error saving challenge notification time: $e");
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Schedule Notification (Hardcoded Body)
+  // ---------------------------------------------------------------------------
+  /// Schedules a daily notification. The notification title = [challengeTitle].
+  /// The body is a hardcoded call-to-action quote.
+  Future<void> scheduleChallengeNotification(
+    String challengeTitle,
+    int hour12,
+    int minute,
+    bool isAm,
+  ) async {
+    // Convert 12-hour format to 24-hour format
+    int hour24 = isAm ? (hour12 % 12) : (hour12 % 12) + 12;
+
+    // Unique ID for the notification
+    int notificationId =
+        DateTime.now().millisecondsSinceEpoch.remainder(100000);
+
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'challenge_reminder',
+        // Title is the challenge title
+        title: challengeTitle,
+        // Hardcoded call-to-action
+        body: 'Keep going and become unstoppable!',
+        wakeUpScreen: true,
+        category: NotificationCategory.Reminder,
+      ),
+      schedule: NotificationCalendar(
+        hour: hour24,
+        minute: minute,
+        second: 0,
+        millisecond: 0,
+        repeats: true, // daily
+        timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
+      ),
+    );
+  }
+
+  // ------------------- VISIBILITY & STREAM METHODS (unchanged) -------------------
   Future<void> updateChallengeVisibility(String title, bool isHidden) async {
     try {
       await _challengesRef.child(title).update({
@@ -366,7 +410,6 @@ class DatabaseService {
       if (data != null) {
         List<Map<String, dynamic>> challenges = [];
         data.forEach((key, value) {
-          // Only add challenges based on their hidden status
           bool isHidden = value['isHidden'] ?? false;
           if ((!showHidden && !isHidden) || (showHidden && isHidden)) {
             challenges.add({
