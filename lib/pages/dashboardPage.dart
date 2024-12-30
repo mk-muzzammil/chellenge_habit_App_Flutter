@@ -67,15 +67,19 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // Let the theme handle the scaffold background:
+      // backgroundColor: theme.scaffoldBackgroundColor,
       drawer: CustomSidebar(userName: userName ?? 'Guest'),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        // backgroundColor from the theme:
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(Icons.menu, color: theme.appBarTheme.iconTheme?.color),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -83,13 +87,11 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, '/profile');
-            },
+            onTap: () => Navigator.pushNamed(context, '/profile'),
             child: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: ClipRRect(
@@ -113,13 +115,11 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/addChellenge');
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(
+        onPressed: () => Navigator.pushNamed(context, '/addChellenge'),
+        backgroundColor: theme.colorScheme.primary,
+        child: Icon(
           Icons.add,
-          color: AppColors.textPrimary,
+          color: theme.colorScheme.onPrimary,
         ),
       ),
       body: isLoading
@@ -134,10 +134,9 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Choose the first habit you want\nto build',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 16,
-                          ),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     Expanded(
@@ -157,13 +156,14 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
                             status: 'Not Started',
                             imagePath: challenge['imageUrl'] ??
                                 'assets/images/placeholder.png',
-                            color: AppColors.primary,
+                            // brand color can come from your theme.colorScheme.primary,
+                            color: theme.colorScheme.primary,
                             isHidden: challenge['isHidden'] ?? false,
                             onVisibilityChanged: (isHidden) =>
                                 _handleVisibilityChange(
                                     challenge['title'], isHidden),
                             onTap: () {
-                              // -------- NEW CODE: PASS THE CHALLENGE TO THE TRACKER PAGE
+                              // Pass the challenge to the tracker page
                               Navigator.pushNamed(
                                 context,
                                 "/tracker",
@@ -182,11 +182,13 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
   }
 
   Widget _buildHeader(BuildContext context, String name) {
+    final theme = Theme.of(context);
     return Row(
       children: [
+        // Could display a small icon or remain empty
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(8),
@@ -195,17 +197,13 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: const TextStyle(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
               children: [
                 const TextSpan(text: 'Hello,\n'),
-                TextSpan(
-                  text: name,
-                  style: const TextStyle(height: 1.2),
-                ),
+                TextSpan(text: name, style: const TextStyle(height: 1.2)),
                 const TextSpan(text: ' 👋'),
               ],
             ),
@@ -237,11 +235,12 @@ class _HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
@@ -271,8 +270,7 @@ class _HabitCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -280,11 +278,10 @@ class _HabitCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         status,
-                        style: TextStyle(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: status.contains('/')
                               ? color
-                              : AppColors.textSecondary,
-                          fontSize: 14,
+                              : theme.textTheme.bodyMedium?.color,
                         ),
                       ),
                     ],
@@ -298,7 +295,7 @@ class _HabitCard extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   isHidden ? Icons.visibility_off : Icons.visibility,
-                  color: AppColors.textPrimary,
+                  color: theme.iconTheme.color,
                 ),
                 onPressed: () {
                   onVisibilityChanged(!isHidden);

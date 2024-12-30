@@ -1,33 +1,68 @@
 import 'package:flutter/material.dart';
-import './colors.dart'; // Import custom colors
+import 'colors.dart';
 
-final ThemeData appTheme = ThemeData(
+/// Light Theme
+final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: AppColors.primary,
-  scaffoldBackgroundColor: AppColors.background,
+  primaryColor: AppColors.lightPrimary,
+  scaffoldBackgroundColor: AppColors.lightBackground,
   textTheme: TextTheme(
     bodyLarge: TextStyle(
-      color: AppColors.textPrimary,
+      color: AppColors.lightTextPrimary,
       fontFamily: 'Inter',
     ),
     bodyMedium: TextStyle(
-      color: AppColors.textSecondary,
+      color: AppColors.lightTextSecondary,
       fontFamily: 'Inter',
     ),
     bodySmall: TextStyle(
-      color: AppColors.textSecondary,
+      color: AppColors.lightTextSecondary,
       fontFamily: 'Inter',
     ),
   ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.primary,
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.lightPrimary,
     titleTextStyle: TextStyle(
-      color: AppColors.textPrimary,
+      color: AppColors.lightTextPrimary,
       fontWeight: FontWeight.bold,
+      fontFamily: 'Inter',
     ),
-    iconTheme: IconThemeData(color: AppColors.textPrimary),
+    iconTheme: IconThemeData(color: AppColors.lightTextPrimary),
   ),
-  floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: AppColors.primary,
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: AppColors.lightPrimary,
+  ),
+);
+
+/// Dark Theme
+final ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primaryColor: AppColors.darkPrimary,
+  scaffoldBackgroundColor: AppColors.darkBackground,
+  textTheme: TextTheme(
+    bodyLarge: TextStyle(
+      color: AppColors.darkTextPrimary,
+      fontFamily: 'Inter',
+    ),
+    bodyMedium: TextStyle(
+      color: AppColors.darkTextSecondary,
+      fontFamily: 'Inter',
+    ),
+    bodySmall: TextStyle(
+      color: AppColors.darkTextSecondary,
+      fontFamily: 'Inter',
+    ),
+  ),
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.darkPrimary,
+    titleTextStyle: TextStyle(
+      color: AppColors.darkTextPrimary,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'Inter',
+    ),
+    iconTheme: IconThemeData(color: AppColors.darkTextPrimary),
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: AppColors.darkPrimary,
   ),
 );

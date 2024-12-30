@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
+// Instead of directly using AppColors for everything, we can rely on Theme or keep AppColors for brand colors:
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -93,22 +93,30 @@ class _NewChallengePageState extends State<NewChallengePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        // Let the theme handle background/title/icon colors:
         title: const Text("New Challenge"),
         actions: [
           TextButton(
             onPressed: saveChallenge,
-            child: const Text(
+            child: Text(
               "Save",
-              style: TextStyle(color: Colors.purple, fontFamily: 'Inter'),
+              style: TextStyle(
+                color: theme.colorScheme.primary, // brand color
+                fontFamily: 'Inter',
+              ),
             ),
           ),
         ],
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(
+              Icons.menu,
+              color: theme.appBarTheme.iconTheme?.color,
+            ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -122,72 +130,100 @@ class _NewChallengePageState extends State<NewChallengePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Image Selector
               Center(
                 child: GestureDetector(
                   onTap: pickImage,
                   child: DottedBorder(
                     borderType: BorderType.Circle,
                     dashPattern: const [6, 3],
-                    color: Colors.grey,
+                    color: theme.dividerColor, // use theme's divider color
                     strokeWidth: 2,
                     child: CircleAvatar(
                       radius: 40,
-                      backgroundColor: Colors.grey[800],
+                      // Use surface color or cardColor for the background:
+                      backgroundColor: theme.colorScheme.surface,
                       backgroundImage: selectedImage != null
                           ? FileImage(selectedImage!)
                           : null,
                       child: selectedImage == null
-                          ? const Icon(Icons.add, size: 32, color: Colors.white)
+                          ? Icon(
+                              Icons.add,
+                              size: 32,
+                              color: theme.iconTheme.color,
+                            )
                           : null,
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Title
               TextField(
                 controller: titleController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Challenge Title",
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Description
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Description",
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Task for selected day
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: taskController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Enter Task for Selected Day",
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
+                        labelStyle: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.save, color: Colors.purple),
+                    icon: Icon(Icons.save, color: theme.colorScheme.primary),
                     onPressed: addTask,
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              const Text(
+
+              // Days List
+              Text(
                 "Select Day and View Tasks:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
+
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: tasksForDays.length,
                 itemBuilder: (context, index) {
+                  bool isSelected = (selectedDay == index + 1);
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -197,19 +233,23 @@ class _NewChallengePageState extends State<NewChallengePage> {
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 4),
                       padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                       decoration: BoxDecoration(
-                        color: selectedDay == index + 1
-                            ? Colors.purple
-                            : Colors.grey[900],
+                        // If selected, use primary color; else surface color
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         "Day ${index + 1}: ${tasksForDays[index]['task']}",
                         style: TextStyle(
-                          color: selectedDay == index + 1
-                              ? Colors.white
-                              : Colors.grey[400],
+                          color: isSelected
+                              ? theme.colorScheme
+                                  .onPrimary // text color on primary
+                              : theme.textTheme.bodyLarge?.color,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -218,12 +258,14 @@ class _NewChallengePageState extends State<NewChallengePage> {
                 },
               ),
               const SizedBox(height: 16),
+
+              // Create Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: saveChallenge,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: theme.colorScheme.primary,
                   ),
                   child: const Text("Create"),
                 ),

@@ -1,7 +1,6 @@
-import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'AddNewChallenges.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 
 class ChallengesPage extends StatefulWidget {
   const ChallengesPage({super.key});
@@ -21,27 +20,21 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Challenges"),
-        backgroundColor: Colors.black,
+        // Let the theme handle the background
+        backgroundColor: theme.appBarTheme.backgroundColor,
         actions: [
           CircleAvatar(
-            backgroundColor: Colors.grey[800],
-            child: const Icon(Icons.person),
+            // Use theme-based surface color for the background
+            backgroundColor: theme.colorScheme.surface,
+            child: Icon(Icons.person, color: theme.iconTheme.color),
           ),
           const SizedBox(width: 16),
         ],
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-        ),
       ),
-      drawer: CustomSidebar(userName: "Thao Lee"),
       body: Column(
         children: [
           // Custom Tab Bar
@@ -49,7 +42,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.grey[900],
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(
@@ -65,8 +58,10 @@ class _ChallengesPageState extends State<ChallengesPage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(_isGridView ? Icons.list : Icons.grid_view),
-                  color: Colors.white,
+                  icon: Icon(
+                    _isGridView ? Icons.list : Icons.grid_view,
+                    color: theme.iconTheme.color,
+                  ),
                   onPressed: () {
                     setState(() {
                       _isGridView = !_isGridView;
@@ -86,8 +81,11 @@ class _ChallengesPageState extends State<ChallengesPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.purple,
-        child: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.primary,
+        child: Icon(
+          Icons.add,
+          color: theme.colorScheme.onPrimary,
+        ),
         onPressed: () {
           Navigator.push(
             context,
@@ -101,6 +99,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
   }
 
   Widget _buildTabButton(String title, int index) {
+    final theme = Theme.of(context);
     bool isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () {
@@ -112,13 +111,15 @@ class _ChallengesPageState extends State<ChallengesPage> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.purple : Colors.transparent,
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.textTheme.bodyMedium?.color,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -129,23 +130,20 @@ class _ChallengesPageState extends State<ChallengesPage> {
 
 class InProgressTab extends StatelessWidget {
   final bool isGridView;
-
   const InProgressTab({required this.isGridView, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Do anytime",
-            style: TextStyle(
-              fontFamily: 'Inter',
-              color: Colors.grey,
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontSize: 14,
-              fontWeight: FontWeight.w400,
             ),
           ),
           const SizedBox(height: 16),
@@ -236,13 +234,13 @@ class InProgressTab extends StatelessWidget {
 
 class CompletedTab extends StatelessWidget {
   const CompletedTab({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Text(
         "No completed challenges yet!",
-        style: TextStyle(color: Colors.grey[400], fontSize: 18),
+        style: theme.textTheme.bodyLarge,
       ),
     );
   }
@@ -250,17 +248,21 @@ class CompletedTab extends StatelessWidget {
 
 class OverdueTab extends StatelessWidget {
   const OverdueTab({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Text(
         "No overdue challenges. Great job!",
-        style: TextStyle(color: Colors.grey[400], fontSize: 18),
+        style: theme.textTheme.bodyLarge,
       ),
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ChallengeCardList & ChallengeCardGrid: use theme for background & text colors
+// ─────────────────────────────────────────────────────────────────────────────
 
 class ChallengeCardList extends StatelessWidget {
   final String title;
@@ -282,8 +284,9 @@ class ChallengeCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
-      color: Colors.grey[900],
+      color: theme.colorScheme.surface,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -292,7 +295,7 @@ class ChallengeCardList extends StatelessWidget {
             // Image on the left
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey[800],
+                color: theme.colorScheme.surface.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(8),
@@ -311,20 +314,16 @@ class ChallengeCardList extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       fontSize: 12,
-                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -333,18 +332,14 @@ class ChallengeCardList extends StatelessWidget {
                       Expanded(
                         child: LinearProgressIndicator(
                           value: progress,
-                          backgroundColor: Colors.grey[800],
+                          backgroundColor: theme.dividerColor,
                           color: progress >= 0.5 ? Colors.green : Colors.red,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         "$current/$total",
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: theme.textTheme.bodySmall,
                       ),
                     ],
                   ),
@@ -378,13 +373,14 @@ class ChallengeCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[900],
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: theme.shadowColor.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(2, 4),
           ),
@@ -403,7 +399,7 @@ class ChallengeCardGrid extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.grey[800],
+                      color: theme.colorScheme.surface.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
                     child: Padding(
@@ -419,45 +415,35 @@ class ChallengeCardGrid extends StatelessWidget {
                 // Title
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 4),
                 // Subtitle
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 12,
-                    color: Colors.grey,
                   ),
                 ),
-                SizedBox(width: 8.0), // For horizontal space
-                SizedBox(height: 8.0), // For vertical space
+                const SizedBox(height: 8.0),
                 // Progress Bar
                 LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: Colors.grey[800],
-                  color: Colors.blue,
+                  backgroundColor: theme.dividerColor,
+                  color: progress >= 0.5 ? Colors.green : Colors.red,
                 ),
                 const SizedBox(height: 8),
-                // Current and Total
+                // Current / Total
                 Text(
                   "$current/$total",
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
             ),
           ),
-          // Eye Icon
         ],
       ),
     );

@@ -14,14 +14,14 @@ class TodayTaskPage extends StatelessWidget {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: const Icon(Icons.menu, color: AppColors.darkPrimary),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
           ),
         ),
       ),
-       drawer: CustomSidebar(userName: "Thao Lee"),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),

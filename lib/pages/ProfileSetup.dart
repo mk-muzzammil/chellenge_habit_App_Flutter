@@ -1,9 +1,8 @@
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+// For brand colors if needed
+import 'package:chellenge_habit_app/theme/colors.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -27,9 +26,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void _handleContinue() async {
     if (_formKey.currentState!.validate() && _selectedGender != null) {
       bool result = await _databaseService.saveProfileData(
-          Name: _nameController.text,
-          Gender: _selectedGender!,
-          context: context); // Call the method to save data
+        Name: _nameController.text,
+        Gender: _selectedGender!,
+        context: context,
+      );
       if (result) {
         _nameController.clear();
         _selectedGender = null;
@@ -43,14 +43,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(Icons.menu, color: theme.iconTheme.color),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -65,29 +67,25 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Profile Setup',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Your Name',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 16,
-                ),
+                style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: theme.textTheme.bodyLarge,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: theme.colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -112,7 +110,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       title: 'Male',
                       icon: Icons.male,
                       isSelected: _selectedGender == 'Male',
-                      iconColor: AppColors.skyBlue,
+                      iconColor: AppColors.lightTextSecondary,
                       onTap: () => setState(() => _selectedGender = 'Male'),
                     ),
                   ),
@@ -122,7 +120,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       title: 'Female',
                       icon: Icons.female,
                       isSelected: _selectedGender == 'Female',
-                      iconColor: AppColors.lightPink,
+                      iconColor: AppColors.darkTextSecondary,
                       onTap: () => setState(() => _selectedGender = 'Female'),
                     ),
                   ),
@@ -135,15 +133,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 child: ElevatedButton(
                   onPressed: _handleContinue,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: theme.colorScheme.primary, // brand color
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continue',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -176,28 +174,33 @@ class _GenderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.surface,
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.textPrimary : iconColor,
+              color: isSelected
+                  ? theme.colorScheme.onPrimary
+                  : iconColor, // brand color
               size: 32,
             ),
             const SizedBox(height: 8),
             Text(
               title,
               style: TextStyle(
-                color: isSelected
-                    ? AppColors.textPrimary
-                    : AppColors.textSecondary,
+                color:
+                    isSelected ? theme.colorScheme.onPrimary : theme.hintColor,
                 fontSize: 16,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),

@@ -1,26 +1,30 @@
-import 'package:chellenge_habit_app/pages/AddNewChallenges.dart';
-import 'package:chellenge_habit_app/pages/AuthenticationPage.dart';
-import 'package:chellenge_habit_app/pages/ChallengesPage.dart';
-import 'package:chellenge_habit_app/pages/HiddenChallengesPage.dart';
-import 'package:chellenge_habit_app/pages/LogInPage.dart';
-import 'package:chellenge_habit_app/pages/ProfileSetup.dart';
-import 'package:chellenge_habit_app/pages/SignUpPage.dart';
-import 'package:chellenge_habit_app/pages/TodayTaskPage.dart';
-import 'package:chellenge_habit_app/pages/TrackerPage.dart';
-import 'package:chellenge_habit_app/pages/dashboardPage.dart';
-import 'package:chellenge_habit_app/pages/inAppPurchase.dart';
-import 'package:chellenge_habit_app/pages/profilePage.dart';
-import 'package:chellenge_habit_app/pages/settingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'theme/app_theme.dart'; // Import custom theme
-import 'pages/SplashScreen.dart';
-import 'pages/NotificationPage.dart';
-import 'pages/StarterPage.dart';
 
-// 1. Import awesome_notifications
+// Themes
+import 'theme/app_theme.dart' show lightTheme, darkTheme;
+
+// Pages
+import 'pages/SplashScreen.dart';
+import 'pages/StarterPage.dart';
+import 'pages/NotificationPage.dart';
+import 'pages/AuthenticationPage.dart';
+import 'pages/SignUpPage.dart';
+import 'pages/LogInPage.dart';
+import 'pages/ProfileSetup.dart';
+import 'pages/inAppPurchase.dart';
+import 'pages/profilePage.dart';
+import 'pages/AddNewChallenges.dart';
+import 'pages/HiddenChallengesPage.dart';
+import 'pages/ChallengesPage.dart';
+import 'pages/TodayTaskPage.dart';
+import 'pages/TrackerPage.dart';
+import 'pages/dashboardPage.dart';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
+
+import 'package:chellenge_habit_app/pages/settingsPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,9 +32,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 2. Initialize Awesome Notifications
+  // Initialize Awesome Notifications
   AwesomeNotifications().initialize(
-    null, // Use default icon for notifications (ensure to add one in drawable folder for Android)
+    null, // Use default app icon
     [
       NotificationChannel(
         channelKey: 'challenge_reminder',
@@ -43,25 +47,47 @@ void main() async {
     ],
   );
 
-  // 3. Request notification permission at startup (optional)
+  // Request notification permission (optional)
   bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
   if (!isAllowed) {
-    // This will prompt a native dialog (especially on iOS).
     await AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  /// Tracks whether the app should be in dark mode or light mode
+  bool isDarkMode =
+      true; // Default: Dark. Set to false if you want Light by default
+
+  /// Method that toggles the theme; called from SettingsScreen
+  void toggleTheme(bool enableDark) {
+    setState(() {
+      isDarkMode = enableDark;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Challenge Habit App',
-      theme: appTheme,
+
+      // Provide both light and dark themes
+      theme: lightTheme,
+      darkTheme: darkTheme,
+
+      // Dynamically pick which theme to use
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
@@ -70,16 +96,19 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => AuthenticationPage(),
         '/signUp': (context) => SignUpScreen(),
         '/login': (context) => LoginScreen(),
-        "/profileSetup": (context) => ProfileSetupScreen(),
+        '/profileSetup': (context) => ProfileSetupScreen(),
         '/notifications': (context) => NotificationTimePage(),
         '/premiumPackages': (context) => PremiumUpgradeScreen(),
-        '/settings': (context) => SettingsScreen(),
+        '/settings': (context) => SettingsScreen(
+              isDarkMode: isDarkMode,
+              onDarkModeToggled: toggleTheme,
+            ),
         '/profile': (context) => ProfileScreen(),
-        "/addChellenge": (context) => NewChallengePage(),
-        "/hiddenChellenges": (context) => HiddenChallenges(),
-        "/chellenges": (context) => ChallengesPage(),
-        "/todayTask": (context) => const TodayTaskPage(),
-        "/tracker": (context) => const HabitTrackerScreen(),
+        '/addChellenge': (context) => NewChallengePage(),
+        '/hiddenChellenges': (context) => HiddenChallenges(),
+        '/chellenges': (context) => ChallengesPage(),
+        '/todayTask': (context) => const TodayTaskPage(),
+        '/tracker': (context) => const HabitTrackerScreen(),
       },
     );
   }

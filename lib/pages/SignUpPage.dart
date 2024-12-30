@@ -1,10 +1,10 @@
-// signup_screen.dart
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -18,15 +18,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final DatabaseService _databaseService =
-      DatabaseService(); // Create an instance of DatabaseService
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -49,46 +48,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: theme.textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 32),
+
+                // Email
                 TextFormField(
                   controller: _emailController,
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Your Email',
-                    labelStyle: TextStyle(color: AppColors.textSecondary),
+                    labelStyle: theme.textTheme.bodySmall,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: AppColors.textSecondary.withOpacity(0.5)),
+                      borderSide: BorderSide(color: theme.dividerColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.primary),
+                      borderSide: BorderSide(color: theme.colorScheme.primary),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Password
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Your Password',
-                    labelStyle: TextStyle(color: AppColors.textSecondary),
+                    labelStyle: theme.textTheme.bodySmall,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: AppColors.textSecondary.withOpacity(0.5)),
+                      borderSide: BorderSide(color: theme.dividerColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.primary),
+                      borderSide: BorderSide(color: theme.colorScheme.primary),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: AppColors.textSecondary,
+                        color: theme.iconTheme.color,
                       ),
                       onPressed: () {
                         setState(() {
@@ -99,28 +100,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Confirm Password
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
-                  style: TextStyle(color: AppColors.textPrimary),
+                  style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
                     labelText: 'Re-enter Password',
-                    labelStyle: TextStyle(color: AppColors.textSecondary),
+                    labelStyle: theme.textTheme.bodySmall,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: AppColors.textSecondary.withOpacity(0.5)),
+                      borderSide: BorderSide(color: theme.dividerColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppColors.primary),
+                      borderSide: BorderSide(color: theme.colorScheme.primary),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: AppColors.textSecondary,
+                        color: theme.iconTheme.color,
                       ),
                       onPressed: () {
                         setState(() {
@@ -131,44 +133,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const Spacer(),
+
+                // Continue Button
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: theme.colorScheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        String email = _emailController.text.trim().toString();
-                        String password =
-                            _passwordController.text.trim().toString();
+                        String email = _emailController.text.trim();
+                        String password = _passwordController.text.trim();
                         String confirmPassword =
-                            _confirmPasswordController.text.trim().toString();
+                            _confirmPasswordController.text.trim();
 
                         if (email.isEmpty ||
                             password.isEmpty ||
                             confirmPassword.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Please fill all fields")));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Please fill all fields")),
+                          );
+                          return;
                         }
                         if (password != confirmPassword) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Password does not match")));
-                        } else {
-                          bool result = await _databaseService.signUp(
-                              email: email,
-                              password: password,
-                              context: context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Password does not match")),
+                          );
+                          return;
+                        }
 
-                          if (result) {
-                            _emailController.clear();
-                            _passwordController.clear();
-                            _confirmPasswordController.clear();
-                          }
+                        bool result = await _databaseService.signUp(
+                          email: email,
+                          password: password,
+                          context: context,
+                        );
+                        if (result) {
+                          _emailController.clear();
+                          _passwordController.clear();
+                          _confirmPasswordController.clear();
                         }
                       }
                     },
@@ -176,7 +185,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       'Continue',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontSize: 16,
-                        color: AppColors.textPrimary,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     ),
                   ),
