@@ -99,7 +99,7 @@ class HabitTrackerScreen extends StatelessWidget {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: const Icon(Icons.menu, color: AppColors.darkPrimary),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },

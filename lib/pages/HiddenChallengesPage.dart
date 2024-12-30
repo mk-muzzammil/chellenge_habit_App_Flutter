@@ -1,6 +1,5 @@
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class HiddenChallenges extends StatefulWidget {
@@ -53,17 +52,18 @@ class _HiddenChallengesState extends State<HiddenChallenges> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        title: const Text(
+        // Let the theme handle background color
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        title: Text(
           "Hidden Challenges",
-          style: TextStyle(color: AppColors.textPrimary),
+          style: theme.appBarTheme.titleTextStyle,
         ),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(Icons.menu, color: theme.appBarTheme.iconTheme?.color),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -74,13 +74,12 @@ class _HiddenChallengesState extends State<HiddenChallenges> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : _hiddenChallenges.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
                     "No hidden challenges",
-                    style: TextStyle(
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 )
@@ -105,7 +104,9 @@ class _HiddenChallengesState extends State<HiddenChallenges> {
                         isHidden: true,
                         onVisibilityChanged: (isHidden) =>
                             _handleVisibilityChange(
-                                challenge['title'], isHidden),
+                          challenge['title'],
+                          isHidden,
+                        ),
                       );
                     },
                   ),
@@ -132,12 +133,13 @@ class ChallengeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: theme.shadowColor.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(2, 4),
           ),
@@ -150,56 +152,51 @@ class ChallengeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Icon
                 Center(
                   child: Container(
                     width: 58,
                     height: 58,
                     decoration: BoxDecoration(
-                      color: Colors.grey[800],
+                      color: theme.colorScheme.surface.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(6.0),
-                      child: iconPath.startsWith('http') ||
-                              iconPath.startsWith('https')
-                          ? Image.network(
-                              iconPath,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(
-                              iconPath,
-                              fit: BoxFit.cover,
-                            ),
+                      child: iconPath.startsWith('http')
+                          ? Image.network(iconPath, fit: BoxFit.cover)
+                          : Image.asset(iconPath, fit: BoxFit.cover),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
+                // Title
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
+                // Subtitle
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
+          // Visibility Icon
           Positioned(
             top: 8,
             right: 8,
             child: IconButton(
               icon: Icon(
                 isHidden ? Icons.visibility_off : Icons.visibility,
-                color: AppColors.textPrimary,
+                color: theme.iconTheme.color,
               ),
               onPressed: () => onVisibilityChanged(!isHidden),
             ),

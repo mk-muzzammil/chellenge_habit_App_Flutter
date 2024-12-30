@@ -1,38 +1,45 @@
 import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  final bool isDarkMode;
+  final ValueChanged<bool> onDarkModeToggled;
+
+  const SettingsScreen({
+    Key? key,
+    required this.isDarkMode,
+    required this.onDarkModeToggled,
+  }) : super(key: key);
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkMode = true; // Tracks Dark Mode state
-  bool isNotificationSoundEnabled = true; // Tracks Notification Sound state
-  bool isNotificationDisplayEnabled = true; // Tracks Notification Display state
+  bool isNotificationSoundEnabled = true;
+  bool isNotificationDisplayEnabled = true;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(Icons.menu, color: theme.appBarTheme.iconTheme?.color),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
           ),
         ),
-        title: const Text('Setting'),
+        title: Text('Settings', style: theme.appBarTheme.titleTextStyle),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: theme.colorScheme.primary,
               child: Image.asset("assets/images/Avatar.png"),
             ),
           ),
@@ -40,41 +47,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       drawer: CustomSidebar(userName: "Thao Lee"),
       body: Container(
-        color: const Color(0xFF121212),
+        // Let the theme handle background color:
+        color: theme.scaffoldBackgroundColor,
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionTitle(title: "Chage Mode"),
+            SectionTitle(title: "Change Mode"),
             SwitchListTile(
-              value: isDarkMode,
-              onChanged: (value) {
-                setState(() {
-                  isDarkMode = value;
-                });
-              },
-              title: const Text(
+              value: widget.isDarkMode,
+              onChanged: widget.onDarkModeToggled,
+              title: Text(
                 "Dark Mode",
-                style: TextStyle(color: Colors.white),
+                style: theme.textTheme.bodyLarge,
               ),
-              subtitle: const Text(
+              subtitle: Text(
                 "Adapts to your mobile screen settings",
-                style: TextStyle(color: Colors.grey),
+                style: theme.textTheme.bodyMedium,
               ),
               secondary:
-                  const Icon(Icons.nightlight_round, color: Colors.white),
-              activeColor: Colors.purple,
+                  Icon(Icons.nightlight_round, color: theme.iconTheme.color),
+              activeColor: theme.colorScheme.primary,
             ),
             const SizedBox(height: 20),
-            const SectionTitle(title: "Chage Language"),
+            SectionTitle(title: "Change Language"),
             DropdownButtonFormField<String>(
               value: "English (US)",
-              dropdownColor: const Color(0xFF1E1E1E),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: BorderSide(color: theme.dividerColor),
                 ),
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               items: const [
                 DropdownMenuItem(
@@ -86,24 +89,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Text("Español"),
                 ),
               ],
-              onChanged: (value) {},
-              style: const TextStyle(color: Colors.white),
+              onChanged: (value) {
+                // Handle language change
+              },
+              style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: 20),
-            const SectionTitle(title: "System Sound"),
+            SectionTitle(title: "System Sound"),
             Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Notification Sound",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: theme.textTheme.bodyLarge,
                   ),
                   Switch(
                     value: isNotificationSoundEnabled,
@@ -112,26 +117,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         isNotificationSoundEnabled = value;
                       });
                     },
-                    activeColor: Colors.purple,
+                    activeColor: theme.colorScheme.primary,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            const SectionTitle(title: "Notification Display"),
+            SectionTitle(title: "Notification Display"),
             Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E1E1E),
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Notification Display",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: theme.textTheme.bodyLarge,
                   ),
                   Switch(
                     value: isNotificationDisplayEnabled,
@@ -140,7 +145,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         isNotificationDisplayEnabled = value;
                       });
                     },
-                    activeColor: Colors.purple,
+                    activeColor: theme.colorScheme.primary,
                   ),
                 ],
               ),
@@ -154,18 +159,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 class SectionTitle extends StatelessWidget {
   final String title;
-
   const SectionTitle({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Colors.grey,
-          fontSize: 16,
+        style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.bold,
         ),
       ),

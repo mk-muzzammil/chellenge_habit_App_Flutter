@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
-import 'package:image_picker/image_picker.dart'; // Import Image Picker
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -15,9 +15,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String gender = "";
   String photoURL = "";
   final _databaseService = DatabaseService();
-  final ImagePicker _picker = ImagePicker(); // Image picker instance
+  final ImagePicker _picker = ImagePicker();
 
-  bool isEditingGender = false; // To track editing state
+  bool isEditingGender = false;
   TextEditingController genderController = TextEditingController();
 
   @override
@@ -29,13 +29,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void fetchUserData() async {
     final userData = await _databaseService.fetchUserData();
     if (userData != null) {
-      print("User Data in ProfileScreen: $userData");
       setState(() {
         displayName = userData['displayName'] ?? "Guest";
         email = userData['email'] ?? "No email provided";
         gender = userData['gender'] ?? "Not specified";
         photoURL = userData['photoURL'] ?? "";
-        genderController.text = gender; // Initialize gender controller
+        genderController.text = gender;
       });
     } else {
       setState(() {
@@ -52,11 +51,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await _databaseService.updateUserData({'gender': updatedGender});
       setState(() {
         gender = updatedGender;
-        isEditingGender = false; // Exit editing mode
+        isEditingGender = false;
       });
-      print("Gender updated to: $updatedGender");
     } catch (e) {
-      print("Error updating gender: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating gender: $e')),
+      );
     }
   }
 
@@ -68,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           filePath: image.path,
           context: context,
         );
-        fetchUserData(); // Refresh the user data to display the updated photo
+        fetchUserData();
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () {
         // Close editing mode when tapping outside
@@ -87,19 +89,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
+        // Let the theme handle scaffold background:
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: theme.appBarTheme.backgroundColor,
           elevation: 0,
           leading: Builder(
             builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+              icon: Icon(Icons.menu, color: theme.iconTheme.color),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
             ),
           ),
-          title: Text("Profile", style: TextStyle(color: Colors.white)),
+          title: Text("Profile", style: theme.appBarTheme.titleTextStyle),
           centerTitle: true,
           actions: [
             Padding(
@@ -112,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Profile picture with edit icon
               Center(
                 child: Stack(
@@ -140,11 +143,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: pickAndUploadPhoto,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.purple,
+                            color: theme.colorScheme.primary, // brand color
                             shape: BoxShape.circle,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Icon(
                               Icons.edit,
                               color: Colors.white,
@@ -157,40 +160,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
-              // Name and Edit Icon
+              const SizedBox(height: 10),
+
+              // Name
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     displayName,
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
+
               // View Challenges Button
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/chellenges');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: theme.colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15,
+                    horizontal: 50,
+                  ),
                 ),
                 child: Text(
                   "View Challenges",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onPrimary,
+                  ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
+
               // Email Section
-              buildInfoField("Email", email),
-              SizedBox(height: 20),
+              buildInfoField("Email", email, context),
+              const SizedBox(height: 20),
+
               // Gender Section with edit functionality
               buildEditableGenderField(),
             ],
@@ -200,7 +212,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildInfoField(String label, String value) {
+  Widget buildInfoField(String label, String value, BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -208,19 +221,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: theme.textTheme.bodySmall,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             decoration: BoxDecoration(
-              color: Colors.grey[900],
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               value,
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              style: theme.textTheme.bodyMedium,
             ),
           ),
         ],
@@ -229,6 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildEditableGenderField() {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -236,21 +250,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             "Gender",
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: theme.textTheme.bodySmall,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             children: [
               Expanded(
                 child: isEditingGender
                     ? TextField(
                         controller: genderController,
-                        style: TextStyle(color: Colors.white),
+                        style: theme.textTheme.bodyMedium,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 15,
+                          ),
                           filled: true,
-                          fillColor: Colors.grey[900],
+                          fillColor: theme.colorScheme.surface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
@@ -258,29 +274,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       )
                     : Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 15,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.grey[900],
+                          color: theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           gender,
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                          style: theme.textTheme.bodyMedium,
                         ),
                       ),
               ),
               IconButton(
                 icon: Icon(
                   isEditingGender ? Icons.check : Icons.edit,
-                  color: Colors.grey,
+                  color: theme.iconTheme.color,
                 ),
                 onPressed: () {
                   setState(() {
                     isEditingGender = !isEditingGender;
                     if (!isEditingGender) {
-                      updateGender(genderController
-                          .text); // Update when exiting edit mode
+                      updateGender(genderController.text);
                     }
                   });
                 },

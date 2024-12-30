@@ -1,17 +1,16 @@
 import 'package:chellenge_habit_app/pages/sideBar.dart';
-import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 
 class NotificationTimePage extends StatefulWidget {
-  const NotificationTimePage({super.key});
+  const NotificationTimePage({Key? key}) : super(key: key);
 
   @override
   _NotificationTimePageState createState() => _NotificationTimePageState();
 }
 
 class _NotificationTimePageState extends State<NotificationTimePage> {
-  int _selectedHour = 7; // Default selected hour (12-hour format)
+  int _selectedHour = 7;
   int _selectedMinute = 30;
   bool _isAm = true;
 
@@ -20,11 +19,12 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     // Retrieve the challenge data from route arguments
     final Map<String, dynamic> challengeData =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
             {};
-
     // If not provided, fallback to 'Default Challenge'
     final String challengeTitle = challengeData['title'] ?? 'Default Challenge';
 
@@ -32,12 +32,17 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      // Let the theme handle background:
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textPrimary),
+            icon: Icon(
+              Icons.menu,
+              color: theme.appBarTheme.iconTheme?.color,
+            ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -45,7 +50,6 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
         ),
       ),
       drawer: CustomSidebar(userName: "Thao Lee"),
-      backgroundColor: const Color(0xFF6A5ACD), // Purple background color
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,19 +58,16 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-                child: const Text(
+                child: Text(
                   "What time do you\nSet notification?",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-
             SizedBox(height: screenHeight * 0.02),
 
             // Cloud Image
@@ -76,21 +77,14 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                 height: screenHeight * 0.25, // Responsive height
               ),
             ),
-
             SizedBox(height: screenHeight * 0.06),
 
-            // Time Selector
+            // Time Selector (in a darker container, if you like)
             Expanded(
               child: Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color(0xFF6A5ACD),
-                      width: 2,
-                    ),
-                  ),
-                  color: Color(0xFF1C1C1E), // Dark background
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
@@ -99,44 +93,43 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: screenHeight * 0.06),
+
+                    // Hour : Minute + AM/PM
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Hour Picker (1-12)
                         _buildRecyclableTimeSlider(
-                          1,
-                          12,
-                          _selectedHour,
-                          (value) {
+                          min: 1,
+                          max: 12,
+                          selectedValue: _selectedHour,
+                          onChanged: (value) {
                             setState(() {
                               _selectedHour = value;
                             });
                           },
+                          theme: theme,
                         ),
-
-                        const Text(
+                        Text(
                           ":",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
+                          style: theme.textTheme.bodyLarge?.copyWith(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                         ),
-
                         // Minute Picker (0-59)
                         _buildRecyclableTimeSlider(
-                          0,
-                          59,
-                          _selectedMinute,
-                          (value) {
+                          min: 0,
+                          max: 59,
+                          selectedValue: _selectedMinute,
+                          onChanged: (value) {
                             setState(() {
                               _selectedMinute = value;
                             });
                           },
+                          theme: theme,
                         ),
-
                         SizedBox(width: screenWidth * 0.1),
 
                         // AM/PM Toggle
@@ -150,13 +143,12 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                               },
                               child: Text(
                                 "AM",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: _isAm
-                                      ? const Color(0xFF6A5ACD)
-                                      : Colors.white,
+                                      ? theme.colorScheme.primary
+                                      : theme.textTheme.bodyLarge?.color,
                                 ),
                               ),
                             ),
@@ -168,13 +160,12 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                               },
                               child: Text(
                                 "PM",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: !_isAm
-                                      ? const Color(0xFF6A5ACD)
-                                      : Colors.white,
+                                      ? theme.colorScheme.primary
+                                      : theme.textTheme.bodyLarge?.color,
                                 ),
                               ),
                             ),
@@ -196,20 +187,19 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                         height: screenHeight * 0.07,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6A5ACD),
+                            backgroundColor: theme.colorScheme.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           onPressed: () async {
-                            // For debugging
+                            // Debug Print
                             print(
                               "Selected Time: ${_selectedHour.toString().padLeft(2, '0')}:${_selectedMinute.toString().padLeft(2, '0')} "
-                              "${_isAm ? 'AM' : 'PM'} "
-                              "for Challenge: $challengeTitle",
+                              "${_isAm ? 'AM' : 'PM'} for Challenge: $challengeTitle",
                             );
 
-                            // 1. Save the chosen time to Firebase
+                            // 1. Save time to Firebase
                             await _databaseService
                                 .saveChallengeNotificationTime(
                               challengeTitle,
@@ -218,7 +208,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                               _isAm,
                             );
 
-                            // 2. Schedule notification with Title + Hardcoded CTA
+                            // 2. Schedule local notification
                             await _databaseService
                                 .scheduleChallengeNotification(
                               challengeTitle,
@@ -240,17 +230,15 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                                 duration: const Duration(seconds: 3),
                               ),
                             );
-
-                            // Optionally pop or navigate
+                            // Optionally navigate or pop...
                             // Navigator.pop(context);
                           },
-                          child: const Text(
+                          child: Text(
                             'Continue',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           ),
                         ),
@@ -266,12 +254,13 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
     );
   }
 
-  Widget _buildRecyclableTimeSlider(
-    int min,
-    int max,
-    int selectedValue,
-    ValueChanged<int> onChanged,
-  ) {
+  Widget _buildRecyclableTimeSlider({
+    required int min,
+    required int max,
+    required int selectedValue,
+    required ValueChanged<int> onChanged,
+    required ThemeData theme,
+  }) {
     return SizedBox(
       width: 80,
       height: 200,
@@ -280,22 +269,22 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
         perspective: 0.005,
         physics: const FixedExtentScrollPhysics(),
         onSelectedItemChanged: (index) {
-          int value = min + (index % (max - min + 1));
+          final int value = min + (index % (max - min + 1));
           onChanged(value);
         },
         childDelegate: ListWheelChildBuilderDelegate(
           builder: (context, index) {
-            int value = min + (index % (max - min + 1));
+            final int value = min + (index % (max - min + 1));
             return Center(
               child: Text(
                 value.toString().padLeft(2, '0'),
-                style: TextStyle(
-                  fontFamily: 'Inter',
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: value == selectedValue
-                      ? const Color(0xFF6A5ACD)
-                      : Colors.white,
+                  // If selected, highlight with primary; else default text color
+                  color: (value == selectedValue)
+                      ? theme.colorScheme.primary
+                      : theme.textTheme.bodyLarge?.color,
                 ),
               ),
             );
