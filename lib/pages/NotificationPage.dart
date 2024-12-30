@@ -1,6 +1,7 @@
 import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 
 class NotificationTimePage extends StatefulWidget {
   const NotificationTimePage({super.key});
@@ -11,12 +12,22 @@ class NotificationTimePage extends StatefulWidget {
 
 class _NotificationTimePageState extends State<NotificationTimePage> {
   int _selectedHour = 7; // Default selected hour (12-hour format)
-  int _selectedMinute = 30; // Default selected minute
-  bool _isAm = true; // Default to AM
+  int _selectedMinute = 30;
+  bool _isAm = true;
+
+  // Instantiate your DatabaseService
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions
+    // Retrieve the challenge data from route arguments
+    final Map<String, dynamic> challengeData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+
+    // If not provided, fallback to 'Default Challenge'
+    final String challengeTitle = challengeData['title'] ?? 'Default Challenge';
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -56,7 +67,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
+            SizedBox(height: screenHeight * 0.02),
 
             // Cloud Image
             Center(
@@ -66,7 +77,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
               ),
             ),
 
-            SizedBox(height: screenHeight * 0.06), // Responsive spacing
+            SizedBox(height: screenHeight * 0.06),
 
             // Time Selector
             Expanded(
@@ -78,7 +89,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                       width: 2,
                     ),
                   ),
-                  color: Color(0xFF1C1C1E), // Dark background for time picker
+                  color: Color(0xFF1C1C1E), // Dark background
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -92,15 +103,18 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Hour Picker (12-hour format)
-                        _buildRecyclableTimeSlider(1, 12, _selectedHour,
-                            (value) {
-                          setState(() {
-                            _selectedHour = value;
-                          });
-                        }),
+                        // Hour Picker (1-12)
+                        _buildRecyclableTimeSlider(
+                          1,
+                          12,
+                          _selectedHour,
+                          (value) {
+                            setState(() {
+                              _selectedHour = value;
+                            });
+                          },
+                        ),
 
-                        // Separator
                         const Text(
                           ":",
                           style: TextStyle(
@@ -111,16 +125,19 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                           ),
                         ),
 
-                        // Minute Picker
-                        _buildRecyclableTimeSlider(0, 59, _selectedMinute,
-                            (value) {
-                          setState(() {
-                            _selectedMinute = value;
-                          });
-                        }),
+                        // Minute Picker (0-59)
+                        _buildRecyclableTimeSlider(
+                          0,
+                          59,
+                          _selectedMinute,
+                          (value) {
+                            setState(() {
+                              _selectedMinute = value;
+                            });
+                          },
+                        ),
 
-                        SizedBox(
-                            width: screenWidth * 0.1), // Responsive spacing
+                        SizedBox(width: screenWidth * 0.1),
 
                         // AM/PM Toggle
                         Column(
@@ -165,18 +182,18 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                         ),
                       ],
                     ),
-                    // const Spacer(),
+
                     SizedBox(height: screenHeight * 0.05),
 
                     // Continue Button
                     Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.05, // Responsive padding
+                        horizontal: screenWidth * 0.05,
                         vertical: screenHeight * 0.02,
                       ),
                       child: SizedBox(
                         width: double.infinity,
-                        height: screenHeight * 0.07, // Responsive height
+                        height: screenHeight * 0.07,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF6A5ACD),
@@ -184,9 +201,48 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            // For debugging
                             print(
-                                "Selected Time: ${_selectedHour.toString().padLeft(2, '0')}:${_selectedMinute.toString().padLeft(2, '0')} ${_isAm ? 'AM' : 'PM'}");
+                              "Selected Time: ${_selectedHour.toString().padLeft(2, '0')}:${_selectedMinute.toString().padLeft(2, '0')} "
+                              "${_isAm ? 'AM' : 'PM'} "
+                              "for Challenge: $challengeTitle",
+                            );
+
+                            // 1. Save the chosen time to Firebase
+                            await _databaseService
+                                .saveChallengeNotificationTime(
+                              challengeTitle,
+                              _selectedHour,
+                              _selectedMinute,
+                              _isAm,
+                            );
+
+                            // 2. Schedule notification with Title + Hardcoded CTA
+                            await _databaseService
+                                .scheduleChallengeNotification(
+                              challengeTitle,
+                              _selectedHour,
+                              _selectedMinute,
+                              _isAm,
+                            );
+
+                            // 3. Show a snackbar
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Daily notification set for "$challengeTitle" at '
+                                  '${_selectedHour.toString().padLeft(2, '0')}:'
+                                  '${_selectedMinute.toString().padLeft(2, '0')} '
+                                  '${_isAm ? 'AM' : 'PM'}!',
+                                ),
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+
+                            // Optionally pop or navigate
+                            // Navigator.pop(context);
                           },
                           child: const Text(
                             'Continue',
@@ -211,7 +267,11 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
   }
 
   Widget _buildRecyclableTimeSlider(
-      int min, int max, int selectedValue, ValueChanged<int> onChanged) {
+    int min,
+    int max,
+    int selectedValue,
+    ValueChanged<int> onChanged,
+  ) {
     return SizedBox(
       width: 80,
       height: 200,

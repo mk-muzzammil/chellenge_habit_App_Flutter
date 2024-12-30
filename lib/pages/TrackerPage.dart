@@ -7,6 +7,20 @@ class HabitTrackerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 1. Retrieve challenge data from route arguments
+    final Map<String, dynamic> challengeData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+
+    // 2. Extract the fields you need
+    final String title = challengeData['title'] ?? 'Unknown Challenge';
+    final String description =
+        challengeData['description'] ?? 'No description available';
+    final String imageUrl =
+        challengeData['imageUrl'] ?? 'assets/images/placeholder.png';
+
+    final List<dynamic> tasksForDays = challengeData['tasksForDays'] ?? [];
+
     return Scaffold(
       backgroundColor: const Color(0xFF1C1C1E),
       appBar: AppBar(
@@ -21,9 +35,17 @@ class HabitTrackerScreen extends StatelessWidget {
           ),
         ),
         actions: [
+          // ---- IMPORTANT: PASS BOTH TITLE & DESCRIPTION HERE ----
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
+              Navigator.pushNamed(
+                context,
+                '/notifications',
+                arguments: {
+                  'title': title,
+                  'description': description,
+                },
+              );
             },
             icon: const Icon(Icons.notifications, color: Colors.white),
           ),
@@ -42,28 +64,28 @@ class HabitTrackerScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
-              // Image and Text
-              const Center(
+              // Display dynamic image & challenge title
+              Center(
                 child: Column(
                   children: [
-                    Image(
-                      image: AssetImage('assets/images/reading book habit.png'),
-                      height: 150,
-                    ),
-                    SizedBox(height: 20),
+                    if (imageUrl.startsWith('http'))
+                      Image.network(imageUrl, height: 150)
+                    else
+                      Image.asset(imageUrl, height: 150),
+                    const SizedBox(height: 20),
                     Text(
-                      'Reading Book',
-                      style: TextStyle(
+                      title,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
-                      'Habits are fundamental part of our life. Make\n the most of your life!',
+                      description,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.white70,
                       ),
@@ -71,9 +93,9 @@ class HabitTrackerScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(height: 30),
 
-              // Calendar
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF2C2C2E),
@@ -82,7 +104,6 @@ class HabitTrackerScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    // Days Grid
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -92,17 +113,18 @@ class HabitTrackerScreen extends StatelessWidget {
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                       ),
-                      itemCount: 30,
+                      // either show tasksForDays.length or 30 if not known
+                      itemCount:
+                          tasksForDays.isNotEmpty ? tasksForDays.length : 30,
                       itemBuilder: (context, index) {
+                        bool isCompleted = index < 4; // dummy logic
                         return Container(
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: index < 4
-                                ? const Color(0xFF6A5ACD) // Progress Color
+                            color: isCompleted
+                                ? const Color(0xFF6A5ACD)
                                 : Colors.transparent,
-                            border: Border.all(
-                              color: Colors.white54,
-                            ),
+                            border: Border.all(color: Colors.white54),
                             shape: BoxShape.circle,
                           ),
                           child: Text(
@@ -116,25 +138,26 @@ class HabitTrackerScreen extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
-
-                    // Legend
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      children: const [
                         LegendItem(
-                            color: const Color(0xFF6A5ACD),
-                            text: 'All complete'),
+                          color: Color(0xFF6A5ACD),
+                          text: 'All complete',
+                        ),
                         LegendItem(
-                            color: Colors.transparent, text: 'Not complete'),
+                          color: Colors.transparent,
+                          text: 'Not complete',
+                        ),
                         LegendItem(color: Colors.purple, text: 'In progress'),
                       ],
                     ),
                   ],
                 ),
               ),
+
               const Spacer(),
 
-              // Continue Button
               SizedBox(
                 width: double.infinity,
                 height: 50,
