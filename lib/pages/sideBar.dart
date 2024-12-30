@@ -59,9 +59,11 @@ class _CustomSidebarState extends State<CustomSidebar> {
                 backgroundColor: photoUrl == null ? Colors.blue : null,
               ),
               accountName: isLoading
-                  ? Text('Loading...', style: TextStyle(color: Colors.white))
+                  ? Text('Loading...', style: theme.textTheme.bodyLarge)
                   : Text(userName ?? widget.userName,
-                      style: TextStyle(color: Colors.white)),
+                      style: theme.textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.bold) ??
+                          TextStyle(fontWeight: FontWeight.bold)),
               accountEmail: null,
             ),
             ListTile(
@@ -86,17 +88,15 @@ class _CustomSidebarState extends State<CustomSidebar> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.notifications, color: Colors.white),
-              title:
-                  Text("Notifications", style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.notifications, color: theme.iconTheme.color),
+              title: Text("Notifications", style: theme.textTheme.bodyLarge),
               onTap: () {
                 Navigator.pushNamed(context, '/notifications');
               },
             ),
             ListTile(
-              leading: Icon(Icons.visibility_off, color: Colors.white),
-              title: Text("Hide Challenges",
-                  style: TextStyle(color: Colors.white)),
+              leading: Icon(Icons.visibility_off, color: theme.iconTheme.color),
+              title: Text("Hide Challenges", style: theme.textTheme.bodyLarge),
               onTap: () {
                 Navigator.pushNamed(context, '/hiddenChellenges');
               },
