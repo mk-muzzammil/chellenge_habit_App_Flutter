@@ -108,8 +108,8 @@ class _MyAppState extends State<MyApp> {
         "/hiddenChellenges": (context) => HiddenChallenges(),
         "/chellenges": (context) => ChallengesPage(),
         // The main Habit dashboard
-        "/todayTask": (context) => const TodayTaskPage(),
-        "/tracker": (context) => const HabitTrackerScreen(),
+        "/todayTask": (context) => TodayTaskPage(),
+        "/tracker": (context) => HabitTrackerScreen(),
       },
     );
   }

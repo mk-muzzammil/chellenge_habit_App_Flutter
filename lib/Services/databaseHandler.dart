@@ -237,7 +237,8 @@ class DatabaseService {
   Future<void> saveChallenge({
     required String title,
     required String description,
-    required List<Map<String, String>> tasksForDays,
+    required List<Map<String, dynamic>>
+        tasksForDays, // Changed to dynamic for flexibility
     required String? imageUrl,
   }) async {
     try {
@@ -384,7 +385,101 @@ class DatabaseService {
     }
   }
 
-  // ------------------- Notifications logic (unchanged) -------------------
+  Future<String?> fetchDayTask(String challengeTitle, int dayIndex) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return null;
+
+    try {
+      final userChallengeRef =
+          _challengesRef.child(user.uid).child(challengeTitle);
+      final snapshot = await userChallengeRef.get();
+
+      if (!snapshot.exists) return null; // No such challenge
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      List<dynamic> tasksForDays = data['tasksForDays'] ?? [];
+
+      // Safety checks
+      if (dayIndex < 0 || dayIndex >= tasksForDays.length) {
+        print("Day index is out of range. Cannot fetch task.");
+        return null;
+      }
+
+      // Return the task for the specified day
+      return tasksForDays[dayIndex]['task'] as String?;
+    } catch (e) {
+      print("Error fetching day task: $e");
+      return null;
+    }
+  }
+
+  /// ------------------- FETCH CHALLENGES BY STATUS -------------------
+  /// Returns a Future containing a map with lists of challenges categorized by status
+  Future<Map<String, List<Map<String, dynamic>>>>
+      fetchChallengesByStatus() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return {};
+
+    try {
+      final snapshot = await _challengesRef.child(user.uid).get();
+      if (!snapshot.exists) return {};
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+
+      List<Map<String, dynamic>> inProgress = [];
+      List<Map<String, dynamic>> completed = [];
+      List<Map<String, dynamic>> overdue = [];
+
+      final now = DateTime.now();
+
+      data.forEach((key, value) {
+        final challenge = Map<String, dynamic>.from(value as Map);
+        final bool isStarted = challenge['isStarted'] ?? false;
+
+        if (!isStarted) return; // Skip challenges that haven't started
+
+        final String? startTimeStr = challenge['startTime'];
+        DateTime? startTime =
+            startTimeStr != null ? DateTime.tryParse(startTimeStr) : null;
+
+        if (startTime == null) return; // Invalid startTime
+
+        final List<dynamic> tasksForDays = challenge['tasksForDays'] ?? [];
+
+        // Calculate how many days have passed since startTime
+        final differenceInDays = now.difference(startTime).inDays;
+
+        // Determine status
+        if (tasksForDays.every((task) => task['completed'] == true)) {
+          completed.add(challenge);
+        } else if (differenceInDays >= 18) {
+          // Challenge duration is over
+          // Check if at least one task is not completed
+          bool hasIncomplete =
+              tasksForDays.any((task) => task['completed'] != true);
+          if (hasIncomplete) {
+            overdue.add(challenge);
+          } else {
+            // All tasks are completed but already handled above
+          }
+        } else {
+          // Challenge is still in progress
+          inProgress.add(challenge);
+        }
+      });
+
+      return {
+        'inProgress': inProgress,
+        'completed': completed,
+        'overdue': overdue,
+      };
+    } catch (e) {
+      print("Error fetching challenges by status: $e");
+      return {};
+    }
+  }
+
+  /// ------------------- Notifications logic (unchanged) -------------------
   Future<void> saveChallengeNotificationTime(
     String challengeTitle,
     int hour12,
@@ -436,37 +531,6 @@ class DatabaseService {
         timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
       ),
     );
-  }
-
-
-
-   /// Fetches the task for a specific day (0-based index) for a given challenge.
-  Future<String?> fetchDayTask(String challengeTitle, int dayIndex) async {
-    final User? user = _auth.currentUser;
-    if (user == null) return null;
-
-    try {
-      final userChallengeRef =
-          _challengesRef.child(user.uid).child(challengeTitle);
-      final snapshot = await userChallengeRef.get();
-
-      if (!snapshot.exists) return null; // No such challenge
-
-      final data = snapshot.value as Map<dynamic, dynamic>;
-      List<dynamic> tasksForDays = data['tasksForDays'] ?? [];
-
-      // Safety checks
-      if (dayIndex < 0 || dayIndex >= tasksForDays.length) {
-        print("Day index is out of range. Cannot fetch task.");
-        return null;
-      }
-
-      // Return the task for the specified day
-      return tasksForDays[dayIndex]['task'] as String?;
-    } catch (e) {
-      print("Error fetching day task: $e");
-      return null;
-    }
   }
 
   // ------------------- VISIBILITY & STREAM METHODS (unchanged) -------------------

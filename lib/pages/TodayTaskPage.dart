@@ -38,7 +38,11 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
     if (_startTime != null) {
       final now = DateTime.now();
       final diffDays = now.difference(_startTime!).inDays;
-      _currentDayIndex = (diffDays < 0) ? 0 : (diffDays > 17) ? 17 : diffDays;
+      _currentDayIndex = (diffDays < 0)
+          ? 0
+          : (diffDays > 17)
+              ? 17
+              : diffDays;
     }
 
     if (_challengeTitle != null) {
@@ -51,8 +55,7 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
   Future<void> _completeTodayTask() async {
     if (_challengeTitle == null) return;
 
-    await _databaseService.completeDayTask(
-        _challengeTitle!, _currentDayIndex);
+    await _databaseService.completeDayTask(_challengeTitle!, _currentDayIndex);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -153,55 +156,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Share logic (if any)
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C2C2E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Share',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Skip logic (if any)
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C2C2E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Skip Scratch',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
               InkWell(
                 onTap: _completeTodayTask,
                 child: Container(
@@ -217,7 +171,7 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                       Icon(Icons.emoji_food_beverage, color: Colors.white),
                       SizedBox(width: 10),
                       Text(
-                        'Challenge completed',
+                        'Mark As Completed',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 14,
