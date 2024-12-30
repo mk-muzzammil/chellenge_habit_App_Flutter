@@ -438,6 +438,37 @@ class DatabaseService {
     );
   }
 
+
+
+   /// Fetches the task for a specific day (0-based index) for a given challenge.
+  Future<String?> fetchDayTask(String challengeTitle, int dayIndex) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return null;
+
+    try {
+      final userChallengeRef =
+          _challengesRef.child(user.uid).child(challengeTitle);
+      final snapshot = await userChallengeRef.get();
+
+      if (!snapshot.exists) return null; // No such challenge
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      List<dynamic> tasksForDays = data['tasksForDays'] ?? [];
+
+      // Safety checks
+      if (dayIndex < 0 || dayIndex >= tasksForDays.length) {
+        print("Day index is out of range. Cannot fetch task.");
+        return null;
+      }
+
+      // Return the task for the specified day
+      return tasksForDays[dayIndex]['task'] as String?;
+    } catch (e) {
+      print("Error fetching day task: $e");
+      return null;
+    }
+  }
+
   // ------------------- VISIBILITY & STREAM METHODS (unchanged) -------------------
   Future<void> updateChallengeVisibility(String title, bool isHidden) async {
     try {
