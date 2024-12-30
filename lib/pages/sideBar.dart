@@ -1,11 +1,42 @@
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 import 'package:flutter/material.dart';
 
-class CustomSidebar extends StatelessWidget {
+class CustomSidebar extends StatefulWidget {
   final String userName;
   final _databaseService = DatabaseService();
 
   CustomSidebar({Key? key, required this.userName}) : super(key: key);
+
+  @override
+  _CustomSidebarState createState() => _CustomSidebarState();
+}
+
+class _CustomSidebarState extends State<CustomSidebar> {
+  final _databaseService = DatabaseService();
+  String? userName;
+  String? photoUrl;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    final userData = await _databaseService.fetchUserData();
+    if (userData != null) {
+      setState(() {
+        userName = userData['displayName'];
+        photoUrl = userData['photoURL'];
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,25 +50,19 @@ class CustomSidebar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             UserAccountsDrawerHeader(
-              // Use the theme’s drawer header color, or keep transparent
-              decoration: BoxDecoration(
-                color: theme.appBarTheme.backgroundColor ?? Colors.transparent,
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
               currentAccountPicture: CircleAvatar(
-                backgroundColor: theme.colorScheme.primary,
-                child: Icon(
-                  Icons.person,
-                  size: 40,
-                  color: theme.colorScheme.onPrimary,
-                ),
+                backgroundImage: photoUrl != null
+                    ? NetworkImage(photoUrl!) // Use the fetched photo URL
+                    : AssetImage('assets/icons/Avatar.png')
+                        as ImageProvider, // Use default local image
+                backgroundColor: photoUrl == null ? Colors.blue : null,
               ),
-              accountName: Text(
-                userName,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onBackground,
-                ),
-              ),
-              accountEmail: null, // or add an email if you have it
+              accountName: isLoading
+                  ? Text('Loading...', style: TextStyle(color: Colors.white))
+                  : Text(userName ?? widget.userName,
+                      style: TextStyle(color: Colors.white)),
+              accountEmail: null,
             ),
             ListTile(
               leading: Icon(Icons.home, color: theme.iconTheme.color),
@@ -61,15 +86,17 @@ class CustomSidebar extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.notifications, color: theme.iconTheme.color),
-              title: Text("Notifications", style: theme.textTheme.bodyLarge),
+              leading: Icon(Icons.notifications, color: Colors.white),
+              title:
+                  Text("Notifications", style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pushNamed(context, '/notifications');
               },
             ),
             ListTile(
-              leading: Icon(Icons.visibility_off, color: theme.iconTheme.color),
-              title: Text("Hide Challenges", style: theme.textTheme.bodyLarge),
+              leading: Icon(Icons.visibility_off, color: Colors.white),
+              title: Text("Hide Challenges",
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pushNamed(context, '/hiddenChellenges');
               },
