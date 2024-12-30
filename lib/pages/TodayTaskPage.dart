@@ -16,12 +16,15 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
   String? _challengeTitle;
   DateTime? _startTime;
   int _currentDayIndex = 0; // 0-based => "Day 1" is index 0
+  String? _dayTask;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _initializePageData();
+  }
 
-    // Retrieve data passed from TrackerPage (or wherever you navigate from).
+  Future<void> _initializePageData() async {
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null) {
@@ -32,29 +35,25 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
       }
     }
 
-    // Compute which day index the user is on based on startTime
     if (_startTime != null) {
       final now = DateTime.now();
       final diffDays = now.difference(_startTime!).inDays;
-      // clamp to 0..17
-      if (diffDays < 0) {
-        _currentDayIndex = 0;
-      } else if (diffDays > 17) {
-        _currentDayIndex = 17;
-      } else {
-        _currentDayIndex = diffDays;
-      }
+      _currentDayIndex = (diffDays < 0) ? 0 : (diffDays > 17) ? 17 : diffDays;
+    }
+
+    if (_challengeTitle != null) {
+      _dayTask = await _databaseService.fetchDayTask(
+          _challengeTitle!, _currentDayIndex);
+      setState(() {}); // Refresh the UI after fetching the task
     }
   }
 
   Future<void> _completeTodayTask() async {
-    // If there's no challenge title, do nothing
     if (_challengeTitle == null) return;
 
-    // Mark the current day (0-based index) as completed in Firebase
-    await _databaseService.completeDayTask(_challengeTitle!, _currentDayIndex);
+    await _databaseService.completeDayTask(
+        _challengeTitle!, _currentDayIndex);
 
-    // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Day ${_currentDayIndex + 1} completed!'),
@@ -64,7 +63,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    // We will show the day number in the UI
     final dayNumber = _currentDayIndex + 1;
 
     return Scaffold(
@@ -88,16 +86,13 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Back arrow
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                   ),
-                  // Day X
                   Text(
                     'Day $dayNumber',
                     style: const TextStyle(
@@ -107,7 +102,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                       color: Colors.white,
                     ),
                   ),
-                  // Right icons (edit, etc.)
                   Row(
                     children: [
                       IconButton(
@@ -124,8 +118,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Today's Task Header
               const Center(
                 child: Text(
                   "It's your today's task...",
@@ -138,8 +130,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Task Box
               Center(
                 child: Container(
                   width: double.infinity,
@@ -149,11 +139,11 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white54),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Habits are fundamental part of our life.\nMake the most of your life!',
+                      _dayTask ?? 'Loading today\'s task...',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 14,
                         color: Color(0xFF6A5ACD),
@@ -163,8 +153,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Buttons row (Share / Skip)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -214,8 +202,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Footer / "Challenge completed" button
               InkWell(
                 onTap: _completeTodayTask,
                 child: Container(
