@@ -66,11 +66,8 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-=======
     final theme = Theme.of(context);
     // We will show the day number in the UI
->>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
     final dayNumber = _currentDayIndex + 1;
 
     return Scaffold(
@@ -127,13 +124,9 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ],
               ),
               const SizedBox(height: 20),
-<<<<<<< HEAD
-              const Center(
-=======
 
               // Today's Task Header
               Center(
->>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
                 child: Text(
                   "It's your today's task...",
                   style: theme.textTheme.bodyLarge?.copyWith(
@@ -156,12 +149,7 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                     child: Text(
                       _dayTask ?? 'Loading today\'s task...',
                       textAlign: TextAlign.center,
-<<<<<<< HEAD
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-=======
                       style: theme.textTheme.bodyMedium?.copyWith(
->>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
                         fontSize: 14,
                         color: theme.colorScheme.primary,
                       ),
@@ -170,8 +158,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 ),
               ),
               const SizedBox(height: 20),
-<<<<<<< HEAD
-=======
 
               // Buttons row (Share / Skip)
               Row(
@@ -221,7 +207,6 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
               const SizedBox(height: 20),
 
               // Footer / "Challenge completed" button
->>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
               InkWell(
                 onTap: _completeTodayTask,
                 child: Container(

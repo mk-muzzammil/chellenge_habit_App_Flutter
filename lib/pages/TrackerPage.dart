@@ -119,10 +119,6 @@ class HabitTrackerScreen extends StatelessWidget {
             },
             icon: const Icon(Icons.notifications, color: Colors.white),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.nightlight_round, color: Colors.white),
-          ),
         ],
       ),
       drawer: CustomSidebar(userName: "Thao Lee"),

@@ -1,3 +1,4 @@
+import 'package:chellenge_habit_app/pages/sideBar.dart';
 import 'package:flutter/material.dart';
 import 'AddNewChallenges.dart';
 import 'package:chellenge_habit_app/theme/colors.dart';
@@ -55,15 +56,20 @@ class _ChallengesPageState extends State<ChallengesPage> {
         title: const Text("Challenges"),
         // Let the theme handle the background
         backgroundColor: theme.appBarTheme.backgroundColor,
-        actions: [
-          CircleAvatar(
-            // Use theme-based surface color for the background
-            backgroundColor: theme.colorScheme.surface,
-            child: Icon(Icons.person, color: theme.iconTheme.color),
+
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: theme.appBarTheme.iconTheme?.color,
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
           ),
-          const SizedBox(width: 16),
-        ],
+        ),
       ),
+      drawer: CustomSidebar(userName: "Thao Lee"),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
