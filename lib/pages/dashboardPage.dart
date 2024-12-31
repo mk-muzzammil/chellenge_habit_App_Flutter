@@ -200,15 +200,6 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen> {
     final theme = Theme.of(context);
     return Row(
       children: [
-        // Could display a small icon or remain empty
-        Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.all(8),
-        ),
-        const SizedBox(width: 16),
         Expanded(
           child: RichText(
             text: TextSpan(

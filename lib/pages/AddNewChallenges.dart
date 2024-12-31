@@ -105,7 +105,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
             child: Text(
               "Save",
               style: TextStyle(
-                color: theme.colorScheme.primary, // brand color
+                color: Colors.white, // brand color
                 fontFamily: 'Inter',
               ),
             ),
@@ -201,7 +201,7 @@ class _NewChallengePageState extends State<NewChallengePage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.save, color: theme.colorScheme.primary),
+                    icon: Icon(Icons.save, color: Colors.purple),
                     onPressed: addTask,
                   ),
                 ],
@@ -266,8 +266,19 @@ class _NewChallengePageState extends State<NewChallengePage> {
                   onPressed: saveChallenge,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text("Create"),
+                  child: Text(
+                    "Create",
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onPrimary, // Ensures visibility
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],

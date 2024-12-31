@@ -64,17 +64,21 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     // We will show the day number in the UI
     final dayNumber = _currentDayIndex + 1;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.darkPrimary),
+            icon: Icon(
+              Icons.menu,
+              color: theme.appBarTheme.iconTheme?.color,
+            ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -95,16 +99,14 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                   // Back arrow
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
                   ),
                   // Day X
                   Text(
                     'Day $dayNumber',
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
                   ),
                   // Right icons (edit, etc.)
@@ -112,12 +114,12 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.edit, color: Colors.white),
+                        icon: Icon(Icons.edit, color: theme.iconTheme.color),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.emoji_food_beverage,
-                            color: Colors.white),
+                        icon: Icon(Icons.emoji_food_beverage,
+                            color: theme.iconTheme.color),
                       ),
                     ],
                   ),
@@ -126,14 +128,12 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
               const SizedBox(height: 20),
 
               // Today's Task Header
-              const Center(
+              Center(
                 child: Text(
                   "It's your today's task...",
-                  style: TextStyle(
-                    fontFamily: 'Inter',
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -145,18 +145,17 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                   width: double.infinity,
                   height: 150,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2C2C2E),
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white54),
+                    border: Border.all(color: theme.dividerColor),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Habits are fundamental part of our life.\nMake the most of your life!',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: Color(0xFF6A5ACD),
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
@@ -174,17 +173,15 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                         // Share logic (if any)
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C2C2E),
+                        backgroundColor: theme.colorScheme.surface,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Share',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontSize: 14,
-                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -196,17 +193,15 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                         // Skip logic (if any)
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C2C2E),
+                        backgroundColor: theme.colorScheme.surface,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Skip Scratch',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontSize: 14,
-                          color: Colors.white,
                         ),
                       ),
                     ),
