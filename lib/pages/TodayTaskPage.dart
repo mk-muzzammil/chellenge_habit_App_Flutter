@@ -66,16 +66,24 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+=======
+    final theme = Theme.of(context);
+    // We will show the day number in the UI
+>>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
     final dayNumber = _currentDayIndex + 1;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.darkPrimary),
+            icon: Icon(
+              Icons.menu,
+              color: theme.appBarTheme.iconTheme?.color,
+            ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -94,41 +102,43 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
                   ),
                   Text(
                     'Day $dayNumber',
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
+                    style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
                   ),
                   Row(
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.edit, color: Colors.white),
+                        icon: Icon(Icons.edit, color: theme.iconTheme.color),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.emoji_food_beverage,
-                            color: Colors.white),
+                        icon: Icon(Icons.emoji_food_beverage,
+                            color: theme.iconTheme.color),
                       ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 20),
+<<<<<<< HEAD
               const Center(
+=======
+
+              // Today's Task Header
+              Center(
+>>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
                 child: Text(
                   "It's your today's task...",
-                  style: TextStyle(
-                    fontFamily: 'Inter',
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -138,24 +148,80 @@ class _TodayTaskPageState extends State<TodayTaskPage> {
                   width: double.infinity,
                   height: 150,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2C2C2E),
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white54),
+                    border: Border.all(color: theme.dividerColor),
                   ),
                   child: Center(
                     child: Text(
                       _dayTask ?? 'Loading today\'s task...',
                       textAlign: TextAlign.center,
+<<<<<<< HEAD
                       style: const TextStyle(
                         fontFamily: 'Inter',
+=======
+                      style: theme.textTheme.bodyMedium?.copyWith(
+>>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
                         fontSize: 14,
-                        color: Color(0xFF6A5ACD),
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
+<<<<<<< HEAD
+=======
+
+              // Buttons row (Share / Skip)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Share logic (if any)
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.surface,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Share',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Skip logic (if any)
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.surface,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Skip Scratch',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Footer / "Challenge completed" button
+>>>>>>> 84a12abb411c44819a0bc69b0b277783c5e8d8ac
               InkWell(
                 onTap: _completeTodayTask,
                 child: Container(

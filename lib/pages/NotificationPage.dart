@@ -1,4 +1,5 @@
 import 'package:chellenge_habit_app/pages/sideBar.dart';
+import 'package:chellenge_habit_app/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:chellenge_habit_app/Services/databaseHandler.dart';
 
@@ -33,7 +34,7 @@ class _NotificationTimePageState extends State<NotificationTimePage> {
 
     return Scaffold(
       // Let the theme handle background:
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.darkPrimary,
       appBar: AppBar(
         backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
